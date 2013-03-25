@@ -1,0 +1,9 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+#GET     /api-docs.json               controllers.ApiHelpController.getResources
+#GET     /api-docs.wsdl/:resource     com.hibu.bragger.controllers.BaseApiController.getWSDL(resource: String)
+#GET     /api-docs.xsd                com.hibu.bragger.controllers.BaseApiController.getXSD
+
+#GET     /api-docs.json/pet           controllers.ApiHelpController.getResource(path = "/api-docs.json/pet")
