@@ -5,7 +5,7 @@ import com.typesafe.sbteclipse.core.EclipsePlugin._
 object ApplicationBuild extends Build {
 
 	val appName         = "bragger-core"
-	val appVersion      = "1.0.0-SNAPSHOT"
+	val appVersion      = "1.0.0"
 
 	val appDependencies = Seq()
 	
