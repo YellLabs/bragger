@@ -1,0 +1,38 @@
+self: com/hibu -> play-bragger 1.0.1
+
+require:
+    - play 1.2.5
+    - com/wordnik -> swagger-core_2.9.1 1.2.2.hibu-SNAPSHOT
+    - com/wordnik -> swagger-annotations_2.9.1 1.2.2-SNAPSHOT
+    - com/hibu -> bragger-core 1.0.0
+
+# can't download automatically the transitive deps of bragger-core
+# as it's stored on a non maven repo (using github pages)
+# so i'm replicating those deps here until a public maven repo is set up
+    - commons-io -> commons-io 2.4
+    - org.ow2.easywsdl -> easywsdl-tool-java2wsdl 2.3
+    - com.ebmwebsourcing.easycommons -> easycommons.xml 1.1
+    - commons-lang -> commons-lang 2.4
+    - org.slf4j -> slf4j-api 1.6.3
+    - com.fasterxml.jackson.module ->jackson-module-scala 2.0.0
+    - com.fasterxml.jackson.core -> jackson-annotations 2.0.4
+    - com.fasterxml.jackson.jaxrs -> jackson-jaxrs-json-provider 2.0.0
+    - joda-time ->joda-time 2.2
+    - org.joda -> joda-convert 1.2
+
+repositories:
+
+    - braggerGithubRepo:
+        type:       http
+        artifact:   http://yelllabs.github.com/bragger/[organization]/[module]/[revision]/[module]-[revision].jar
+        contains:
+            - com/wordnik -> swagger-core_2.9.1 1.2.2.hibu-SNAPSHOT
+            - com/wordnik -> swagger-annotations_2.9.1 1.2.2-SNAPSHOT
+            - com/hibu -> bragger-core 1.0.0
+            
+    # easywsdl dependencies
+    - petalsLinkMaven:
+        type: http
+        artifact: http://maven.petalslink.com/public/com/ebmwebsourcing/easycommons/[module]/[revision]/[module]-[revision].jar
+        contains:
+            - com.ebmwebsourcing.easycommons -> *

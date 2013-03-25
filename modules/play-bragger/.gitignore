@@ -1,0 +1,8 @@
+tmp/
+eclipse/
+modules/
+.gitignore
+.project
+.settings/
+.classpath
+
