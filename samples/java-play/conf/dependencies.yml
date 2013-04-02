@@ -1,0 +1,38 @@
+self: com.hibu -> petstore-java-play1 1.0.0
+
+require:
+    - play 1.2.5
+    - com/hibu -> play-bragger 1.0.1
+    - com/hibu -> swagger-play_2.9.1 0.1
+
+repositories:
+            
+    - braggerGithubRepoZIP:
+        type: http
+        artifact:   http://yelllabs.github.com/bragger/[organization]/[module]/[revision]/[module]-[revision].zip
+        contains:
+            - com/hibu -> play-bragger 1.0.1
+            - com/hibu -> swagger-play_2.9.1 0.1
+
+    #- localSwagger:
+    #    type:       local
+    #    artifact:   ${application.path}/../../../swagger-core/modules/swagger-play
+    #    contains:
+    #        - com/hibu -> swagger-play_2.9.1 0.1
+    
+    - braggerGithubRepoJAR:
+        type: chain
+        using:
+            - hibuArtifactoryPlayModules:
+                type: http
+                artifact:   http://yelllabs.github.com/bragger/[organization]/[module]/[revision]/[module]-[revision].jar
+        contains:
+            - com/wordnik -> swagger-core_2.9.1 1.2.2.hibu-SNAPSHOT
+            - com/wordnik -> swagger-annotations_2.9.1 1.2.2-SNAPSHOT
+            - com/hibu -> bragger-core 1.0.0
+
+    - petalsLinkMaven:
+        type: http
+        artifact: http://maven.petalslink.com/public/com/ebmwebsourcing/easycommons/[module]/[revision]/[module]-[revision].jar
+        contains:
+            - com.ebmwebsourcing.easycommons -> *
