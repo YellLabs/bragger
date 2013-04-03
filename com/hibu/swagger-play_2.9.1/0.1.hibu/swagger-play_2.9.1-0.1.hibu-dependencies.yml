@@ -1,0 +1,31 @@
+self: com/hibu -> swagger-play_2.9.1 0.1.hibu
+
+require:
+    - com/wordnik -> swagger-core_2.9.1 1.2.2.hibu-SNAPSHOT
+    - com/wordnik -> swagger-annotations_2.9.1 1.2.2-SNAPSHOT
+ 
+    - com.fasterxml.jackson.core -> jackson-databind 2.0.0
+    - org.scala-lang -> scala-library 2.9.1
+
+    - com.sun.jersey -> jersey-core 1.7:
+        exclude:
+          - org.slf4j -> *
+          - org.jboss.weld -> *
+
+
+repositories:
+
+    - braggerGithubRepo:
+        type:       http
+        artifact:   http://yelllabs.github.com/bragger/[organization]/[module]/[revision]/[module]-[revision].jar
+        contains:
+            - com/wordnik -> swagger-core_2.9.1 1.2.2.hibu-SNAPSHOT
+            - com/wordnik -> swagger-annotations_2.9.1 1.2.2-SNAPSHOT
+
+    - sonatype:
+        type:       iBiblio
+        root:       https://oss.sonatype.org/content/repositories/releases/
+        contains:
+            - com.fasterxml.jackson.core -> jackson-databind 2.0.0
+            - org.scala-lang -> scala-library 2.9.1
+
