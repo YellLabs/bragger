@@ -1,13 +1,12 @@
 package com.hibu.bragger.controllers;
 
-import java.util.Map;
-
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import com.hibu.bragger.helpers.SwaggerHelper;
+import com.hibu.bragger.swagger.SwaggerHelper;
 import com.hibu.bragger.wsdl.WSDL20gen;
 import com.hibu.bragger.xsd.ModelsXSDGenerator;
+import com.wordnik.swagger.core.Documentation;
 
 /**
  * 
@@ -24,10 +23,8 @@ public class BraggerController extends Controller {
 		
 		try {
 			
-			// getting the models used in the operation of the passed controllers
 			@SuppressWarnings("rawtypes")
-			Class[] modelClasses = SwaggerHelper.getApiModelClasses(SwaggerHelper.controllerClasses.values());
-			
+			Class[] modelClasses = SwaggerHelper.getApiModelClasses();
 			String schemaAsString = ModelsXSDGenerator.getModelsXSD(modelClasses);
 			return ok(schemaAsString).as("application/xml");
 			
@@ -50,11 +47,7 @@ public class BraggerController extends Controller {
 		
 		try {
 			
-			// input data from swagger
-			Map<String, com.wordnik.swagger.core.Documentation> docsMap = SwaggerHelper.readApiDocs();
-			
-			com.wordnik.swagger.core.Documentation resourceDoc = docsMap.get(resourceName);
-			
+			Documentation resourceDoc = SwaggerHelper.readApiDocs().get(resourceName); 
 			String wsdlAsString = WSDL20gen.generateWSDL20(resourceName, resourceDoc, SwaggerHelper.basicTypes);
 			return ok(wsdlAsString).as("text/xml");
 		

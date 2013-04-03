@@ -1,8 +1,6 @@
 package controllers;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -10,15 +8,11 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.xml.bind.JAXBException;
 
 import models.Pet;
 import play.mvc.Result;
 import api.PetData;
 
-import com.hibu.bragger.helpers.SwaggerHelper;
-import com.hibu.bragger.wsdl.WSDL20gen;
-import com.hibu.bragger.xsd.ModelsXSDGenerator;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiError;
 import com.wordnik.swagger.annotations.ApiErrors;
@@ -40,11 +34,6 @@ public class PetApiController extends BaseApiController {
 	public static Result getPetById(
 			@ApiParam(value = "ID of pet that needs to be fetched", allowableValues = "range[1,5]", required = true) @PathParam("petId") String petId) {
 		return JsonResponse(petData.getPetbyId(Long.parseLong(petId)));
-	}
-
-	public static Result prepare() {
-		SwaggerHelper.controllerClasses.put("pet", PetApiController.class);
-		return ok();
 	}
 		
 	@POST

@@ -6,14 +6,11 @@ import com.typesafe.sbteclipse.core.EclipsePlugin._
 object ApplicationBuild extends Build {
 
   val appName         = "play2-bragger"
-  val appVersion      = "1.0.0"
+  val appVersion      = "1.2.1"
 
   val appDependencies = Seq(
-    javaCore,
-    javaJdbc,
-    javaEbean,
-    "com.hibu" % "bragger-core" % "1.0.0" exclude("com.wordnik", "swagger-core"),
-    "com.wordnik" %% "swagger-play2" % "1.2.1-SNAPSHOT",
+    "com.hibu" % "bragger-core" % "1.1.0" exclude("com.wordnik", "swagger-core_2.9.1"),
+    "com.wordnik" %% "swagger-play2" % "1.2.1.hibu-SNAPSHOT",
     "org.ow2.easywsdl" % "easywsdl-tool-java2wsdl" % "2.3"
   )
 
@@ -26,10 +23,6 @@ object ApplicationBuild extends Build {
 //      </dependency>,
 
 	publishArtifact in (Compile, packageDoc) := false,
-	
-	autoScalaLibrary := false,
-	
-	crossPaths := false,
 	
 	testOptions += Tests.Argument(TestFrameworks.JUnit, "-v"),
 	
@@ -46,7 +39,7 @@ object ApplicationBuild extends Build {
 	// custom modules
 	resolvers += "github pages repo" at "http://yelllabs.github.com/bragger",
 	
-    // easywsdl      
+    // easywsdl
     resolvers in ThisBuild += "petalslink" at "http://maven.petalslink.com/public", 
     
     // typesafe
