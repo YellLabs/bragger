@@ -1,9 +1,9 @@
-self: com.hibu -> petstore-java-play1 1.0.0
+self: com.hibu -> petstore-java-play1 1.1.0
 
 require:
     - play 1.2.5
-    - com/hibu -> play-bragger 1.0.1
-    - com/hibu -> swagger-play_2.9.1 0.1
+    - com/hibu -> play-bragger 1.1.0
+    - com/wordnik -> swagger-play_2.9.1 0.1.hibu
 
 repositories:
             
@@ -11,14 +11,19 @@ repositories:
         type: http
         artifact:   http://yelllabs.github.com/bragger/[organization]/[module]/[revision]/[module]-[revision].zip
         contains:
-            - com/hibu -> play-bragger 1.0.1
-            - com/hibu -> swagger-play_2.9.1 0.1
+            - com/hibu -> play-bragger 1.1.0
+            - com/wordnik -> swagger-play_2.9.1 0.1.hibu
 
     #- localSwagger:
     #    type:       local
     #    artifact:   ${application.path}/../../../swagger-core/modules/swagger-play
     #    contains:
-    #        - com/hibu -> swagger-play_2.9.1 0.1
+    #        - com/wordnik -> swagger-play_2.9.1 0.1.hibu
+    #- localBragger:
+    #    type:       local
+    #    artifact:   ${application.path}/../../modules/play-bragger
+    #    contains:
+    #        - com/hibu -> play-bragger 1.1.0
     
     - braggerGithubRepoJAR:
         type: chain
@@ -27,9 +32,9 @@ repositories:
                 type: http
                 artifact:   http://yelllabs.github.com/bragger/[organization]/[module]/[revision]/[module]-[revision].jar
         contains:
-            - com/wordnik -> swagger-core_2.9.1 1.2.2.hibu-SNAPSHOT
+            - com/wordnik -> swagger-core_2.9.1 1.2.2-SNAPSHOT
             - com/wordnik -> swagger-annotations_2.9.1 1.2.2-SNAPSHOT
-            - com/hibu -> bragger-core 1.0.0
+            - com/hibu -> bragger-core 1.1.0
 
     - petalsLinkMaven:
         type: http

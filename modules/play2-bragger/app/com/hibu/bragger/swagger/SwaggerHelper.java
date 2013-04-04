@@ -48,21 +48,23 @@ public class SwaggerHelper {
 		// result
 		Map<String, Documentation> docsMap = new HashMap<String, Documentation>();
 		
+		Map<String, Class> controllerClasses = getApiControllers();
+
 		for (String resourcePath: ApiHelpInventory.getResourceNames()) {
 			
 			String resourceName = extractResourceName(resourcePath);
 			if (resourceName!=null) {
 				
 				String json = ApiHelpInventory.getPathHelpJson("/api-docs.json/"+resourceName, null);
-				
-				Documentation simpleDoc = JsonUtil.getJsonMapper().readValue(json, Documentation.class);
-				
-				Map<String, Class> controllerClasses = getApiControllers();
-				
-				if (controllerClasses.get(resourceName)!=null) {				
-					Documentation typedResourceDoc = PlayApiReader.read(controllerClasses.get(resourceName), 
-							simpleDoc.apiVersion(), simpleDoc.apiVersion(), simpleDoc.basePath(), simpleDoc.resourcePath());
-					docsMap.put(resourceName, typedResourceDoc);
+				if (json!=null && !json.isEmpty() && controllerClasses.get(resourceName)!=null) {
+					
+					Documentation simpleDoc = JsonUtil.getJsonMapper().readValue(json, Documentation.class);
+										
+					if (controllerClasses.get(resourceName)!=null) {
+						Documentation typedResourceDoc = PlayApiReader.read(controllerClasses.get(resourceName), 
+								simpleDoc.apiVersion(), simpleDoc.apiVersion(), simpleDoc.basePath(), simpleDoc.resourcePath());
+						docsMap.put(resourceName, typedResourceDoc);
+					}
 				}
 			}
 		}

@@ -8,7 +8,7 @@ import javax.xml.bind.JAXBException;
 
 import org.ow2.easywsdl.schema.api.SchemaException;
 import org.ow2.easywsdl.wsdl.api.WSDLException;
-
+import com.wordnik.swagger.core.Documentation;
 import play.mvc.Controller;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -33,10 +33,8 @@ public class BraggerController extends Controller {
 			
 			// getting the models used in the operation of the passed controllers
 			@SuppressWarnings("rawtypes")
-			Class[] modelClasses = SwaggerHelper.getApiModelClasses(SwaggerHelper.controllerClasses.values());
-			
+			Class[] modelClasses = SwaggerHelper.getApiModelClasses();
 			String schemaAsString = ModelsXSDGenerator.getModelsXSD(modelClasses);
-			
 			renderXml(schemaAsString);
 			
 		} catch (IllegalArgumentException e) {
@@ -58,11 +56,7 @@ public class BraggerController extends Controller {
 		
 		try {
 			
-			// input data from swagger
-			Map<String, com.wordnik.swagger.core.Documentation> docsMap = SwaggerHelper.readApiDocs();
-			
-			com.wordnik.swagger.core.Documentation resourceDoc = docsMap.get(resourceName);
-			
+			Documentation resourceDoc = SwaggerHelper.readApiDocs().get(resourceName);
 			String wsdlAsString = WSDL20gen.generateWSDL20(resourceName, resourceDoc, SwaggerHelper.basicTypes);
 			renderXml(wsdlAsString);
 		
@@ -74,7 +68,6 @@ public class BraggerController extends Controller {
 			e.printStackTrace();
 			error(500, e.getMessage());
 		}
-		
 	}
 		
 }

@@ -17,7 +17,8 @@ import com.wordnik.swagger.sample.resource.JavaRestResourceUtil;
 @Api(value = "/pet", description = "Operations about pets")
 public class PetController extends BaseApiController {
 	
-	private static PetData petData = new PetData();
+	// commented out, see https://github.com/YellLabs/bragger/issues/1
+	//private static PetData petData = new PetData();
 	
 	@ApiOperation(value = "Find pet by ID", notes = "Returns a pet when ID < 10. " + "ID > 10 or nonintegers will simulate API error conditions", responseClass = "com.wordnik.swagger.sample.model.Pet")
 	@ApiErrors({
@@ -26,6 +27,8 @@ public class PetController extends BaseApiController {
 	})
 	public static void getPetById(@ApiParam(value = "ID of pet that needs to be fetched", required = true) String petId) 
 	{
+		Logger.info("getPetById");
+		PetData petData = new PetData();
 		Pet pet = petData.getPetbyId(new JavaRestResourceUtil().getLong(0, 100000, 0, petId));
 		if (null != pet) {
 			if (returnXml()) {
@@ -54,7 +57,7 @@ public class PetController extends BaseApiController {
 			@ApiError(code = 405, reason = "Validation exception")
 	})
 	public static void updatePet(@ApiParam(value = "Pet object that needs to be added to the store", required = true) Pet pet) {
-		PetData petData1 = new PetData();
+		PetData petData = new PetData();
 		Logger.info("updatePet");
 		petData.addPet(pet);
 		renderText("");
@@ -65,6 +68,7 @@ public class PetController extends BaseApiController {
 	public static void	findPetsByStatus(@ApiParam(value = "Status values that need to be considered for filter", required = true, defaultValue = "available", allowableValues = "available,pending,sold", allowMultiple = true) String status) 
 	{
 		Logger.info("findPetsByStatus");
+		PetData petData = new PetData();
 		List<Pet> o = petData.findPetByStatus(status);
 		if (returnXml()) {
 			renderXml(marshallToXml(o)); 
@@ -78,7 +82,7 @@ public class PetController extends BaseApiController {
 	@ApiErrors(@ApiError(code = 400, reason = "Invalid tag value"))
 	@Deprecated
 	public static void findPetsByTags(@ApiParam(value = "Tags to filter by", required = true, allowMultiple = true) String tags) {
-		//PetData petData = new PetData();
+		PetData petData = new PetData();
 		List<Pet> o = petData.findPetByTags(tags);
 		if (returnXml()) {
 			marshallToXml(o); 

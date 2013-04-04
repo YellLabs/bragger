@@ -1,3 +1,4 @@
+dist/
 tmp/
 eclipse/
 modules/
@@ -5,4 +6,5 @@ modules/
 .project
 .settings/
 .classpath
+lib/
 

@@ -11,10 +11,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import play.modules.swagger.ApiHelpInventory;
 import play.modules.swagger.PlayApiReader;
-
+import com.wordnik.swagger.core.Documentation;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.wordnik.swagger.core.DocumentationEndPoint;
@@ -24,23 +26,12 @@ import com.wordnik.swagger.core.util.JsonUtil;
 
 public class SwaggerHelper {
 	
+	private static Logger logger = LoggerFactory.getLogger(SwaggerHelper.class.getName());
+	
 	public static Set<String> basicTypes = new HashSet<String>();
 	
-	public static Map<String, Class> controllerClasses = new HashMap<String, Class>();
-	
 	static {
-		
-		basicTypes.addAll(Arrays.asList(new String[]{"string", "String", "number", "int", "boolean", "object", "Array", "void", "null", "any"}));
-		
-		// TODO get the list of controller classes dynamically or at least from the configs
-//		try {
-//			controllerClasses.put("pet", Class.forName(PetApiController.class.getName()));
-//			controllerClasses.put("user", Class.forName(UserApiController.class.getName()));
-//			controllerClasses.put("store", Class.forName(StoreApiController.class.getName()));
-//		} catch (ClassNotFoundException e) {
-//			e.printStackTrace();
-//		}
-		
+		basicTypes.addAll(Arrays.asList(new String[]{"string", "String", "number", "int", "boolean", "object", "Array", "void", "null", "any"}));		
 	}
 	
 	/**
@@ -50,45 +41,31 @@ public class SwaggerHelper {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	public static Map<String, com.wordnik.swagger.core.Documentation> readApiDocs() throws JsonParseException, JsonMappingException, IOException {
+	public static Map<String, Documentation> readApiDocs() throws JsonParseException, JsonMappingException, IOException {
 		
 		// result
-		Map<String, com.wordnik.swagger.core.Documentation> docsMap = new HashMap<String, com.wordnik.swagger.core.Documentation>();
+		Map<String, Documentation> docsMap = new HashMap<String, Documentation>();
 		
-		// call swagger code to get the main resources
-		String resourcesResponseAsString = ApiHelpInventory.getRootHelpJson(null);
-		
-		List<String> resourcesNames = new ArrayList<String>();
-		com.wordnik.swagger.core.Documentation d1 = JsonUtil.getJsonMapper().readValue(resourcesResponseAsString, com.wordnik.swagger.core.Documentation.class);
-		for (DocumentationEndPoint api: d1.getApis()) {				
-			String path = api.getPath();
-			int endIndex = path.lastIndexOf("/");
-			if (endIndex!=-1) {
-				path = path.substring(endIndex+1);
-			}
-			path = path.replace(".{format}", "");
-			resourcesNames.add(path);
-		}
-		
-		for (String resourceName: resourcesNames) {
-			
-			//Promise<Response> promise = WS.url("http://localhost:9000/api-docs.json/"+resourceName).get(); // TODO at least use reverse routing
-			//String json = promise.get().asJson().toString();
-			//com.wordnik.swagger.core.Documentation d2 = JsonUtil.getJsonMapper().readValue(json, com.wordnik.swagger.core.Documentation.class);
-			//docsMap.put(resourceName, d2);
-			
-			String json = ApiHelpInventory.getPathHelpJson("/"+resourceName);
-			if (json!=null && !json.isEmpty() && controllerClasses.get(resourceName)!=null) {
-				
-				com.wordnik.swagger.core.Documentation simpleDoc = 
-						JsonUtil.getJsonMapper().readValue(json, com.wordnik.swagger.core.Documentation.class);
-				
-				com.wordnik.swagger.core.Documentation typedResourceDoc = 
-						PlayApiReader.read(controllerClasses.get(resourceName), simpleDoc.apiVersion(), simpleDoc.apiVersion(), simpleDoc.basePath(), simpleDoc.resourcePath()); 
+		Map<String, Class> controllerClasses = getApiControllers();
 
-				docsMap.put(resourceName, typedResourceDoc);
-			}
+		for (String resourcePath: ApiHelpInventory.getResourceNames()) {
 			
+			String resourceName = extractResourceName(resourcePath);
+			if (resourceName!=null) {
+				
+				String json = ApiHelpInventory.getPathHelpJson("/"+resourceName);
+				if (json!=null && !json.isEmpty() && controllerClasses.get(resourceName)!=null) {
+					
+					Documentation simpleDoc = JsonUtil.getJsonMapper().readValue(json, Documentation.class);
+					
+					if (controllerClasses.get(resourceName)!=null) {
+						Documentation typedResourceDoc = PlayApiReader.read(controllerClasses.get(resourceName), 
+								simpleDoc.apiVersion(), simpleDoc.apiVersion(), simpleDoc.basePath(), simpleDoc.resourcePath()); 
+		
+						docsMap.put(resourceName, typedResourceDoc);
+					}
+				}
+			}
 		}
 		
 		return docsMap;
@@ -100,19 +77,14 @@ public class SwaggerHelper {
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
-	public static Class[] getApiModelClasses(Collection<Class> controllerClasses) {
+	public static Class[] getApiModelClasses() {
 		
 		// used a set initially to remove duplicates 
 		Set<Class> modelClassesSet = new HashSet<Class>();
 		
-		for (Class controllerClass : controllerClasses) {
+		for (Class controllerClass : getApiControllers().values()) {
 			
-			// this is used to get the internalType of the responseClasses
-			// TODO this should be given as an external dependency (maybe a Map<Class,Documentation> which maps a controller class to the corresponding swagger doc), 
-			// it would allow this method to become
-			// independent of the PlayReader which means depending only on the swagger-core module rather than depending from the play2-swagger.
-			// this would in turn mean being independent from play framework and then this method could (and should!) be moved to the bragger-core java module
-			com.wordnik.swagger.core.Documentation typedResourceDoc = PlayApiReader.read(controllerClass, null, null, null, null);
+			Documentation typedResourceDoc = PlayApiReader.read(controllerClass, null, null, null, null);
 
 			for (DocumentationEndPoint api : typedResourceDoc.getApis()) {
 				for (DocumentationOperation operation : api.getOperations()) {
@@ -137,16 +109,41 @@ public class SwaggerHelper {
 						}
 						
 					} catch (ClassNotFoundException e) {
-						// TODO use plain logback to remove dependency from Play
-						//Logger.error("class not found: " + e.getMessage());
+						logger.error("model class not found: " + e.getMessage());
 					}
 				}
 			}
 		}
 		
-		
 		// convert set modelClasses to an array of Class
 		return modelClassesSet.toArray(new Class[modelClassesSet.size()]);
 	}
+
+	/**
+	 * @return map with entries like: "Pet" -> PetApiController.class
+	 */
+	public static Map<String, Class> getApiControllers() {
+		
+		Map<String, Class> controllerClasses = new HashMap<String, Class>();
+		
+		Map<String, Class<?>> resourceMap = ApiHelpInventory.getResourceMapJava();
+		for (String resourcePath : resourceMap.keySet()) {
+			String resourceName = extractResourceName(resourcePath);
+			controllerClasses.put(resourceName, resourceMap.get(resourcePath));
+		}
+		
+		return controllerClasses;
+	}
 	
+	// ========================================================================
+	
+	private static String extractResourceName(String resourcePath) {
+		String resourceName = null;
+		int endIndex = resourcePath.lastIndexOf("/");
+		if (endIndex!=-1) {			
+			resourceName = resourcePath.substring(endIndex+1);
+		} 
+		return resourceName;
+	}
+
 }

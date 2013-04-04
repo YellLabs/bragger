@@ -12,13 +12,12 @@ import com.wordnik.swagger.sample.resource.JavaRestResourceUtil;
 @Api(value = "/user", description = "Operations about user")
 public class UserController extends BaseApiController {
 	
-  private static UserData userData = new UserData();
-  private static JavaRestResourceUtil ru = new JavaRestResourceUtil();
-
   @ApiOperation(value = "Create user", notes = "This can only be done by the logged in user.")
   public static void createUser(@ApiParam(value = "Created user object", required = true) User user) {
-    userData.addUser(user);
-    renderText("");
+	  UserData userData = new UserData();
+	  JavaRestResourceUtil ru = new JavaRestResourceUtil();
+	  userData.addUser(user);
+	  renderText("");
   }
 
   @ApiOperation(value = "Updated user", notes = "This can only be done by the logged in user.")
@@ -27,8 +26,10 @@ public class UserController extends BaseApiController {
 	  @ApiError(code = 404, reason = "User not found")
   })
   public static void updateUser(@ApiParam(value = "name that need to be deleted", required = true) String username, @ApiParam(value = "Updated user object", required = true) User user) {
-    userData.addUser(user);
-    renderText("");
+	  UserData userData = new UserData();
+	  JavaRestResourceUtil ru = new JavaRestResourceUtil();
+	  userData.addUser(user);
+	  renderText("");
   }
 
   @ApiOperation(value = "Delete user", notes = "This can only be done by the logged in user.")
@@ -37,8 +38,10 @@ public class UserController extends BaseApiController {
 	  @ApiError(code = 404, reason = "User not found")
   })
   public static void deleteUser(@ApiParam(value = "The name that needs to be deleted", required = true) String username) {
-    userData.removeUser(username);
-    renderText("");
+	  UserData userData = new UserData();
+	  JavaRestResourceUtil ru = new JavaRestResourceUtil();
+	  userData.removeUser(username);
+	  renderText("");
   }
 
   @ApiOperation(value = "Get user by user name", responseClass = "com.wordnik.swagger.sample.model.User")
@@ -47,12 +50,14 @@ public class UserController extends BaseApiController {
 	  @ApiError(code = 404, reason = "User not found")
   })
   public static void getUserByName(@ApiParam(value = "The name that needs to be fetched. Use user1 for testing. ", required = true) String username) {
-    User user = userData.findUserByName(username);
-    if (null != user) {
-      if (returnXml()) renderXml(marshallToXml(user)); else renderJSON(user);
-    } else {
-      notFound();
-    }
+	  UserData userData = new UserData();
+	  JavaRestResourceUtil ru = new JavaRestResourceUtil();
+	  User user = userData.findUserByName(username);
+	  if (null != user) {
+		  if (returnXml()) renderXml(marshallToXml(user)); else renderJSON(user);
+	  } else {
+		  notFound();
+	  }
   }
 
   @ApiOperation(value = "Logs user into the system", responseClass = "String")

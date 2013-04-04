@@ -14,16 +14,15 @@ import com.wordnik.swagger.sample.resource.JavaRestResourceUtil;
 @Api(value = "/store", description = "Operations about store")
 public class PetStoreController extends BaseApiController {
 
-  private static StoreData storeData = new StoreData();
-  private static JavaRestResourceUtil ru = new JavaRestResourceUtil();
-
   @ApiOperation(value = "Find purchase order by ID", notes = "For valid response try integer IDs with value <= 5. " + "Anything above 5 or nonintegers will generate API errors", responseClass = "com.wordnik.swagger.sample.model.Order")
   @ApiErrors({
     @ApiError(code = 400, reason = "Invalid ID supplied"),
     @ApiError(code = 404, reason = "Order not found")
   })
   public static void getOrderById(@ApiParam(value = "ID of pet that needs to be fetched", required = true) String orderId) {
-    Order order = storeData.findOrderById(ru.getLong(0, 10000, 0, orderId));
+	  StoreData storeData = new StoreData();
+	  JavaRestResourceUtil ru = new JavaRestResourceUtil();
+	  Order order = storeData.findOrderById(ru.getLong(0, 10000, 0, orderId));
     if (null != order) {
       			if (returnXml()) {
 				renderXml(marshallToXml(order)); 
@@ -39,6 +38,8 @@ public class PetStoreController extends BaseApiController {
   @ApiOperation(value = "Place an order for a pet", responseClass = "com.wordnik.swagger.sample.model.Order")
   @ApiErrors({ @ApiError(code = 400, reason = "Invalid Order")})
   public static void placeOrder(@ApiParam(value = "order placed for purchasing the pet", required = true) Order order) {
+	  StoreData storeData = new StoreData();
+	  JavaRestResourceUtil ru = new JavaRestResourceUtil();
     storeData.placeOrder(order);
     renderText("");
   }
@@ -49,6 +50,8 @@ public class PetStoreController extends BaseApiController {
     @ApiError(code = 404, reason = "Order not found")
   })
   public static void deleteOrder(@ApiParam(value = "ID of the order that needs to be deleted", required = true) String orderId) {
+	  StoreData storeData = new StoreData();
+	  JavaRestResourceUtil ru = new JavaRestResourceUtil();
     storeData.deleteOrder(ru.getLong(0, 10000, 0, orderId));
     renderText("");
   }
