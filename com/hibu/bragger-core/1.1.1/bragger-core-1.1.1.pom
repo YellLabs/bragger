@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.hibu</groupId>
+    <artifactId>bragger-core</artifactId>
+    <packaging>jar</packaging>
+    <description>bragger-core</description>
+    <version>1.1.1</version>
+    <name>bragger-core</name>
+    <organization>
+        <name>com.hibu</name>
+    </organization>
+    <dependencies>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.easywsdl</groupId>
+            <artifactId>easywsdl-tool-java2wsdl</artifactId>
+            <version>2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ebmwebsourcing.easycommons</groupId>
+            <artifactId>easycommons.xml</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.wordnik</groupId>
+            <artifactId>swagger-core_2.9.1</artifactId>
+            <version>1.2.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.wordnik</groupId>
+            <artifactId>swagger-annotations_2.9.1</artifactId>
+            <version>1.2.2-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+    <repositories>
+        <repository>
+            <id>githubpagesrepo</id>
+            <name>github pages repo</name>
+            <url>http://yelllabs.github.com/bragger/</url>
+            <layout>default</layout>
+        </repository>
+        <repository>
+            <id>PetalslinkMaven</id>
+            <name>Petalslink Maven</name>
+            <url>http://maven.petalslink.com/public/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+</project>
