@@ -53,5 +53,5 @@ GET     /public/                                staticDir:public
 
 # Home page
 GET     /                                       Application.index
-GET     /swagger-ui/                            staticDir:public/swagger-ui-1.0
+GET     /swagger-ui/                            staticDir:public/swagger-ui-1.1.7
 

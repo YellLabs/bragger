@@ -34,3 +34,6 @@ GET     /user.json/logout            controllers.UserApiController.logoutUser
 PUT     /user.json/:username         controllers.UserApiController.updateUser(username)
 DELETE  /user.json/:username         controllers.UserApiController.deleteUser(username)
 GET     /user.json/:username         controllers.UserApiController.getUserByName(username)
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /swagger-ui/*file            controllers.Assets.at(path="/public/swagger-ui-1.1.7", file)
