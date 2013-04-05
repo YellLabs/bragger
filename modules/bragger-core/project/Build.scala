@@ -5,7 +5,7 @@ import com.typesafe.sbteclipse.core.EclipsePlugin._
 object ApplicationBuild extends Build {
 
 	val appName         = "bragger-core"
-	val appVersion      = "1.1.0"
+	val appVersion      = "1.2.2"
 
 	val appDependencies = Seq()
 	
@@ -24,7 +24,7 @@ object ApplicationBuild extends Build {
 				"org.ow2.easywsdl" % "easywsdl-tool-java2wsdl" % "2.3",
 				"com.ebmwebsourcing.easycommons" % "easycommons.xml" % "1.1", // even though it's required for easywsdl-wsdl to function, it's not part of its dependency tree
 				
-				"com.wordnik" % "swagger-core_2.9.1" % "1.2.2.hibu-SNAPSHOT",
+				"com.wordnik" % "swagger-core_2.9.1" % "1.2.2-SNAPSHOT",
 				"com.wordnik" % "swagger-annotations_2.9.1" % "1.2.2-SNAPSHOT"
 
 			),

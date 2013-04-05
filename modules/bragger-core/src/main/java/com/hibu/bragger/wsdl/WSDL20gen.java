@@ -8,7 +8,7 @@ import javax.xml.namespace.QName;
 import org.ow2.easywsdl.schema.api.ComplexType;
 import org.ow2.easywsdl.schema.api.Documentation;
 import org.ow2.easywsdl.schema.api.Element;
-import org.ow2.easywsdl.schema.api.Import;
+import org.ow2.easywsdl.schema.api.Include;
 import org.ow2.easywsdl.schema.api.Schema;
 import org.ow2.easywsdl.schema.api.Sequence;
 import org.ow2.easywsdl.schema.api.SimpleType;
@@ -41,11 +41,30 @@ import com.wordnik.swagger.core.DocumentationParameter;
 /**
  *  this class generates a WSDL20 document form API metadata information
  *  provided by swagger
+ *  
+ *  example of generating client stub code using axis2
+ *  wsdl2java.sh -wv 2.0 --databinding-method jaxbri -p com.hibu.api.petservice -u --serverside-interface --unpack-classes --test-case --over-ride -uri http://localhost:9000/api-docs.wsdl/pet
+ *  
  * @author paolo
  *
  */
 public class WSDL20gen {
 	
+	private static final String HTTP_WWW_W3_ORG_NS_WSDL = "http://www.w3.org/ns/wsdl";
+	private static final String HTTP_WWW_W3_ORG_NS_WSDL_SOAP = "http://www.w3.org/ns/wsdl/soap";
+	private static final String HTTP_WWW_W3_ORG_NS_WSDL_HTTP = "http://www.w3.org/ns/wsdl/http";
+	private static final String HTTP_WWW_W3_ORG_NS_WSDL_EXTENSIONS = "http://www.w3.org/ns/wsdl-extensions";
+	
+	private static final String XSD_URL_PATH = "/api-docs.xsd";
+	private static final String BINDING_PROTOCOL_HTTP = "http";
+	private static final String WSDL20_DOCUMENT_NAME_SUFFIX = "_wsdl20_document";
+	private static final String INTERFACE_NAME_SUFFIX = "interface";
+	private static final String SERVICE_NAME_SUFFIX = "service";
+	private static final String REST_ENDPOINT_SUFFIX = "rest_endpoint";
+	private static final String REST_BINDING_SUFFIX = "rest_binding";
+	private static final String HTTP_HIBU_COM_API = "http://hibu.com/api";
+	private static final String TYPES = "models";
+
 	/**
 	 * 
 	 * @param resourceName
@@ -60,16 +79,18 @@ public class WSDL20gen {
 
 		try {
 
-		
-			String webServiceName = resourceName + "_service";
-			String descriptionName = webServiceName + "_wsdl20_document";
-			String mainServiceNamespace = "http://www.hibu.com/ns/" + webServiceName;
+			String webServiceName = resourceName + SERVICE_NAME_SUFFIX;
+			String descriptionName = webServiceName + WSDL20_DOCUMENT_NAME_SUFFIX;
+			
+			String interfaceName = webServiceName + INTERFACE_NAME_SUFFIX; 
+			String endpointName = webServiceName + REST_ENDPOINT_SUFFIX;
+			String restHttpBindingName = interfaceName + REST_BINDING_SUFFIX;
+
+			String mainServiceNamespace = HTTP_HIBU_COM_API + "/" + webServiceName;
 			String targetNamespace = mainServiceNamespace + "/wsdl";
-			String modelsNamespace = mainServiceNamespace + "/xsd";  // maybe add the package name so to avoid clashed e.g. placesapi Place and bps Place
-			String interfaceName = webServiceName + "_interface"; 
-			String endpointName = webServiceName + "_rest_endpoint";
-			String restHttpBindingName = interfaceName + "_rest_binding";
-			String bindingProtocolHttp = "http";
+			String modelsNamespace = mainServiceNamespace + "/" + WSDL20gen.TYPES;
+			
+			String bindingProtocolHttp = BINDING_PROTOCOL_HTTP;
 	
 			// global infos
 			WSDLFactory wsdlFactory = WSDLFactory.newInstance();
@@ -79,25 +100,15 @@ public class WSDL20gen {
 	
 			// types
 			Types types = desc20.createTypes();
-			
-			// first schema is only to import the types generated via JAXB from models
+
+			// first schema is only to include the types generated via JAXB from models
 			Schema modelsSchema = types.createSchema();
-			Import importDef = modelsSchema.createImport();
-			importDef.setLocationURI(new URI(resourceDoc.getBasePath() + "/api-docs.xsd")); // TODO use reverse route only if not found use a default
-			importDef.setNamespaceURI(modelsNamespace);
-			modelsSchema.addImport(importDef);
+			modelsSchema.setTargetNamespace(modelsNamespace);
+			Include includeDef = modelsSchema.createInclude();
+			includeDef.setLocationURI(new URI(resourceDoc.getBasePath() + XSD_URL_PATH));
+			modelsSchema.addInclude(includeDef);
 			types.addSchema(modelsSchema);
-	
-			// second schema for utility types created by-needs 
-			// e.g. Model is part of the first schema, List[Model] goes here
-			// e.g. definition of types like "void"
-			Schema messageTypesSchema = types.createSchema();
-			types.addSchema(messageTypesSchema);
-	
-			// third schema contains only the elements referenced from the service interface operations
-			Schema messageElementsSchema = types.createSchema();
-			types.addSchema(messageElementsSchema);
-			
+
 			desc20.setTypes(types);
 			
 			// interface
@@ -131,7 +142,7 @@ public class WSDL20gen {
 				for (DocumentationOperation operation : api.getOperations()) {
 					
 					// abstract part: interface operations
-					Operation wsdlAbstractOperation = WSDL20gen.getWSDLInterfaceOperation(itf, operation, messageTypesSchema, messageElementsSchema, modelsNamespace, basicTypes);
+					Operation wsdlAbstractOperation = WSDL20gen.getWSDLInterfaceOperation(itf, operation, modelsSchema, modelsSchema, modelsNamespace, basicTypes);
 					itf.addOperation(wsdlAbstractOperation);
 					
 					// concrete part: binding operations
@@ -166,12 +177,12 @@ public class WSDL20gen {
 			WSDLWriterImpl writer = new CustomWSDL20Writer();
 			
 			writer.useCustomNamespacesPrefixes(new String[] { 
-					"wsdl20" , "http://www.w3.org/ns/wsdl", 
-					"wsdl20-ext", "http://www.w3.org/ns/wsdl-extensions",
-					"wsdl20-http", "http://www.w3.org/ns/wsdl/http",
-					"wsdl20-soap", "http://www.w3.org/ns/wsdl/soap" ,
+					"wsdl" , HTTP_WWW_W3_ORG_NS_WSDL, 
+					"wsdl-ext", HTTP_WWW_W3_ORG_NS_WSDL_EXTENSIONS,
+					"wsdl-http", HTTP_WWW_W3_ORG_NS_WSDL_HTTP,
+					"wsdl-soap", HTTP_WWW_W3_ORG_NS_WSDL_SOAP ,
 					"tns", desc20.getTargetNamespace() ,
-					"models", modelsNamespace
+					TYPES, modelsNamespace
 			});
 			
 			Document outDoc = writer.getDocument(desc20);			
@@ -215,7 +226,7 @@ public class WSDL20gen {
 		try {
 			// pattern is always in/out for REST services (http://www.ibm.com/developerworks/webservices/library/ws-restwsdl/)
 			wsdlAbstractOperation.getOtherAttributes().put(new QName("pattern"), MEPPatternConstants.IN_OUT.value().toString());
-			wsdlAbstractOperation.getOtherAttributes().put(new QName("http://www.w3.org/ns/wsdl-extensions", "safe"), String.valueOf(operation.getHttpMethod().equalsIgnoreCase("get"))); // true if op is idempotent
+			wsdlAbstractOperation.getOtherAttributes().put(new QName(HTTP_WWW_W3_ORG_NS_WSDL_EXTENSIONS, "safe"), String.valueOf(operation.getHttpMethod().equalsIgnoreCase("get"))); // true if op is idempotent
 		} catch (XmlException e) {
 			e.printStackTrace();
 			throw new WSDLException(e);
@@ -223,14 +234,18 @@ public class WSDL20gen {
 		
 		// request message
 		Input requestMessage = wsdlAbstractOperation.createInput();
-		requestMessage.setMessageName(new QName(targetNamespace, operation.getNickname() + "_in"));
-		requestMessage.setElement(createMethodRequestElement(typesSchema, elementsSchema, targetNamespace, modelsNamespace, operation));
+		// NOTE! setting the message name on the requestMessage element, causes wrong client code generation by axis2
+		Element requestElement = createMethodRequestElement(typesSchema, elementsSchema, targetNamespace, modelsNamespace, operation);
+		requestElement.setQName(new QName(modelsNamespace, operation.getNickname() + "_request"));
+		requestMessage.setElement(requestElement);
 		wsdlAbstractOperation.setInput(requestMessage);
 		
 		// response message
 		Output responseMessage = wsdlAbstractOperation.createOutput();
-		responseMessage.setMessageName(new QName(targetNamespace, operation.getNickname() + "_out"));
-		responseMessage.setElement(createMethodResponseElement(typesSchema, elementsSchema, targetNamespace, modelsNamespace, operation, basicTypes));
+		// NOTE! setting the message name on the responseMessage element, causes wrong client code generation by axis2
+		Element responseElement = createMethodResponseElement(typesSchema, elementsSchema, targetNamespace, modelsNamespace, operation, basicTypes);
+		responseElement.setQName(new QName(modelsNamespace, operation.getNickname() + "_response"));
+		responseMessage.setElement(responseElement);
 		wsdlAbstractOperation.setOutput(responseMessage);
 		
 		// fault response messages
@@ -285,7 +300,7 @@ public class WSDL20gen {
 		Element responseMessageElement = elementsSchema.createElement();
 		
 		// set name attribute
-		responseMessageElement.setQName(new QName(targetNamespace, operation.getNickname() + "_response"));
+		responseMessageElement.setQName(new QName(modelsNamespace, WSDL20gen.TYPES + ":" + operation.getNickname() + "_response"));
 
 		// set type attribute
 		if (basicTypes.contains(operation.getResponseClass())) {
@@ -294,13 +309,13 @@ public class WSDL20gen {
 			Type type = null;
 			
 			if (respType.equalsIgnoreCase("void")) {
-				type = EasyWsdlHelper.getComplexType(targetNamespace, respType);
+				type = EasyWsdlHelper.getComplexType(modelsNamespace, respType);
 				ComplexType ctype = (ComplexType) type;
 				ctype.setSequence(ctype.createSequence());
 			}
 			
 			if (respType.equalsIgnoreCase("string")) {
-				type = EasyWsdlHelper.getSimpleType(targetNamespace, respType);
+				type = EasyWsdlHelper.getSimpleType(modelsNamespace, respType);
 				SimpleType stype = (SimpleType) type;
 				stype.setRestriction(stype.createRestriction());
 				stype.getRestriction().setBase(new QName("xs", "string"));
@@ -321,7 +336,7 @@ public class WSDL20gen {
 				Type modelType = EasyWsdlHelper.getComplexType(modelsNamespace, modelName);
 				
 				// declare a new type for the list of models
-				ComplexType listOfModelsType = EasyWsdlHelper.getComplexType(targetNamespace, operation.getResponseClass());
+				ComplexType listOfModelsType = EasyWsdlHelper.getComplexType(modelsNamespace, modelName + "List");
 				Element modelListElement = typesSchema.createElement();
 				modelListElement.setType(listOfModelsType);
 				listOfModelsType.setSequence(listOfModelsType.createSequence());
@@ -372,9 +387,9 @@ public class WSDL20gen {
 		Element requestMessageElement = elementsSchema.createElement();
 		
 		// set name attribute
-		requestMessageElement.setQName(new QName(targetNamespace, operation.getNickname() + "_request"));
+		requestMessageElement.setQName(new QName(modelsNamespace,  WSDL20gen.TYPES + ":" + operation.getNickname() + "_request"));
 
-		ComplexType requestType = EasyWsdlHelper.getComplexType(targetNamespace, operation.getNickname() + "_request_type");
+		ComplexType requestType = EasyWsdlHelper.getComplexType(modelsNamespace, operation.getNickname() + "_request_type");
 		requestType.setSequence(requestType.createSequence());
 		
 		if (operation.getParameters()!=null)
@@ -409,6 +424,8 @@ public class WSDL20gen {
 		if (typesSchema.getType(requestType.getQName())==null) {
 			typesSchema.addType(requestType);
 		}
+		
+		requestMessageElement.setType(requestType);
 		
 		return requestMessageElement;
 	}

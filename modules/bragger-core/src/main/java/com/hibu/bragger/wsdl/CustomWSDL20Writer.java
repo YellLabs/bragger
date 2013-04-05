@@ -12,11 +12,8 @@ import org.ow2.easywsdl.wsdl.impl.wsdl20.Constants;
 import org.ow2.easywsdl.wsdl.impl.wsdl20.WSDLJAXBContext;
 import org.ow2.easywsdl.wsdl.impl.wsdl20.WSDLWriterImpl;
 import org.ow2.easywsdl.wsdl.org.w3.ns.wsdl.DescriptionType;
-
-
 import org.w3c.dom.Document;
 
-import com.hibu.bragger.wsdl.CustomPrefixMapper;
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
 public class CustomWSDL20Writer extends WSDLWriterImpl {
@@ -78,17 +75,18 @@ public class CustomWSDL20Writer extends WSDLWriterImpl {
 		return doc;
 	}
 	
-	/*
+	/**
 	 * Method used to set predefined namespace prefixes.
 	 */
 	public void useCustomNamespacesPrefixes(String[] customPrefixes) throws WSDLException {
 		this.customPrefixes = customPrefixes.clone();
 	}
 
-	/*
+	/**
 	 * Method used to set normalized namespace prefixes.
 	 */
 	public void useNormalizedNamespacesPrefixes() throws WSDLException {
 		this.customPrefixes = null;
 	}
+
 }
