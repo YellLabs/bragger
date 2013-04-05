@@ -23,6 +23,7 @@ import java.util.Date;
 import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name = "Order")
+@XmlType(name = "Order")
 public class Order {
 	private long id;
 	private long petId;
