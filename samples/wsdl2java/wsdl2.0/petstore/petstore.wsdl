@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:description xmlns:wsdl="http://www.w3.org/ns/wsdl" xmlns:models="http://hibu.com/api/petservice/models" xmlns:tns="http://hibu.com/api/petservice/wsdl" xmlns:wsdl-ext="http://www.w3.org/ns/wsdl-extensions" xmlns:wsdl-http="http://www.w3.org/ns/wsdl/http" xmlns:wsdl-soap="http://www.w3.org/ns/wsdl/soap" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://hibu.com/api/petservice/wsdl">
+  
+  <wsdl:types>
+    <xs:schema targetNamespace="http://hibu.com/api/petservice/models">
+
+      <!-- JAXB bound schemas from application models -->
+      <xs:include schemaLocation="petstore.xsd"/>
+
+      <!-- request/response types -->
+      <xs:complexType name="addPet_request_type">
+        <xs:sequence>
+          <xs:element minOccurs="1" name="body"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="updatePet_request_type">
+        <xs:sequence>
+          <xs:element minOccurs="1" name="body"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getPetById_request_type">
+        <xs:sequence>
+          <xs:element minOccurs="1" name="petId"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="findPetsByStatus_request_type">
+        <xs:sequence>
+          <xs:element minOccurs="1" name="status"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="findPetsByTags_request_type">
+        <xs:sequence>
+          <xs:element minOccurs="1" name="tags"/>
+        </xs:sequence>
+      </xs:complexType>
+
+      <!-- request/response elements-->
+      <xs:element name="addPet_request" type="models:addPet_request_type"/>
+      <xs:element name="addPet_response" type="models:void"/>
+      <xs:element name="updatePet_request" type="models:updatePet_request_type"/>
+      <xs:element name="updatePet_response" type="models:void"/>
+      <xs:element name="getPetById_request" type="models:getPetById_request_type"/>
+      <xs:element name="getPetById_response" type="models:Pet"/>
+      <xs:element name="findPetsByStatus_request" type="models:findPetsByStatus_request_type"/>
+      <xs:element name="findPetsByStatus_response" type="models:PetList"/>
+      <xs:element name="findPetsByTags_request" type="models:findPetsByTags_request_type"/>
+      <xs:element name="findPetsByTags_response" type="models:PetList"/>
+
+      <!-- other types -->
+      <xs:complexType name="void">
+        <xs:sequence/>
+      </xs:complexType>
+      <xs:complexType name="PetList">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="Pet" nillable="true" type="models:Pet"/>
+        </xs:sequence>
+      </xs:complexType>
+
+    </xs:schema>
+  </wsdl:types>
+
+
+  <wsdl:interface name="petserviceinterface">
+    <wsdl:operation name="addPet" pattern="http://www.w3.org/ns/wsdl/in-out" wsdl-ext:safe="false">
+      <wsdl:input element="models:addPet_request"/>
+      <wsdl:output element="models:addPet_response"/>
+    </wsdl:operation>
+    <wsdl:operation name="updatePet" pattern="http://www.w3.org/ns/wsdl/in-out" wsdl-ext:safe="false">
+      <wsdl:input element="models:updatePet_request"/>
+      <wsdl:output element="models:updatePet_response"/>
+    </wsdl:operation>
+    <wsdl:operation name="getPetById" pattern="http://www.w3.org/ns/wsdl/in-out" wsdl-ext:safe="true">
+      <wsdl:input element="models:getPetById_request"/>
+      <wsdl:output element="models:getPetById_response"/>
+    </wsdl:operation>
+    <wsdl:operation name="findPetsByStatus" pattern="http://www.w3.org/ns/wsdl/in-out" wsdl-ext:safe="true">
+      <wsdl:input element="models:findPetsByStatus_request"/>
+      <wsdl:output element="models:findPetsByStatus_response"/>
+    </wsdl:operation>
+    <wsdl:operation name="findPetsByTags" pattern="http://www.w3.org/ns/wsdl/in-out" wsdl-ext:safe="true">
+      <wsdl:input element="models:findPetsByTags_request"/>
+      <wsdl:output element="models:findPetsByTags_response"/>
+    </wsdl:operation>
+  </wsdl:interface>
+
+
+  <wsdl:binding interface="tns:petserviceinterface" name="petserviceinterfacerest_binding" type="http://www.w3.org/ns/wsdl/http" wsdl-http:methodDefault="http">
+    <wsdl:operation ref="tns:addPet" wsdl-http:inputSerialization="application/json" wsdl-http:location="/pet.{format}" wsdl-http:method="POST" wsdl-http:outputSerialization="application/json"/>
+    <wsdl:operation ref="tns:updatePet" wsdl-http:inputSerialization="application/json" wsdl-http:location="/pet.{format}" wsdl-http:method="PUT" wsdl-http:outputSerialization="application/json"/>
+    <wsdl:operation ref="tns:getPetById" wsdl-http:inputSerialization="application/json" wsdl-http:location="/pet.{format}/{petId}" wsdl-http:method="GET" wsdl-http:outputSerialization="application/json"/>
+    <wsdl:operation ref="tns:findPetsByStatus" wsdl-http:inputSerialization="application/json" wsdl-http:location="/pet.{format}/findByStatus" wsdl-http:method="GET" wsdl-http:outputSerialization="application/json"/>
+    <wsdl:operation ref="tns:findPetsByTags" wsdl-http:inputSerialization="application/json" wsdl-http:location="/pet.{format}/findByTags" wsdl-http:method="GET" wsdl-http:outputSerialization="application/json"/>
+  </wsdl:binding>
+
+
+  <wsdl:service interface="tns:petserviceinterface" name="petservice">
+    <wsdl:endpoint address="http://localhost:9000" binding="tns:petserviceinterfacerest_binding" name="petservicerest_endpoint"/>
+  </wsdl:service>
+
+
+</wsdl:description>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<book:book xmlns:book="http://www.bookstore.org/book/xsd" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+   xsi:schemaLocation="http://www.bookstore.org/book/xsd book.xsd">
+  <book:title>Eclipse Web Tools Platform: Developing Java Web Applications</book:title>
+  <book:author>
+    <book:firstName>Naci</book:firstName>
+    <book:lastName>Dai</book:lastName>
+  </book:author>
+  <book:author>
+    <book:firstName>Lawrence</book:firstName>
+    <book:lastName>Mandel</book:lastName>
+  </book:author>
+  <book:author>
+    <book:firstName>Arthur</book:firstName>
+    <book:lastName>Ryman</book:lastName>
+  </book:author>
+  <book:overview>
+    Discover WTP, the New End-to-End Toolset for Java-Based Web Development
+    The Eclipse Web Tools Platform (WTP) seamlessly integrates all the tools today’s Java
+    Web developer needs. WTP is both an unprecedented Open Source resource for working
+    developers and a powerful foundation for state-of-the-art commercial products.
+    Eclipse Web Tools Platform offers in-depth descriptions of every tool included in
+    WTP, introducing powerful capabilities never before available in Eclipse. The authors
+    cover the entire Web development process–from defining Web application architectures
+    and development processes through testing and beyond. And if you’re seeking to extend
+    WTP, this book provides an introduction to the platform’s rich APIs. The book also
+  </book:overview>
+  <book:pages>752</book:pages>
+  <book:publisher>Addison-Wesley Professional</book:publisher>
+  <book:language>English</book:language>
+  <book:isbn-10>0321396855</book:isbn-10>
+  <book:isbn-13>978-0321396853</book:isbn-13>
+  <book:price>54.99</book:price>
+</book:book>

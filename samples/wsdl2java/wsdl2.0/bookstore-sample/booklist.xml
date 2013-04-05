@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<booklist:bookList xmlns:booklist="http://www.bookstore.org/booklist/xsd"
+   xmlns:book="http://www.bookstore.org/book/xsd"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.bookstore.org/booklist/xsd booklist.xsd 
+                       http://www.bookstore.org/book/xsd book.xsd">
+
+  <booklist:book url="http://www.bookstore.com/books/0321442598"
+     title="BIRT: A Field Guide to Reporting"/>
+  <booklist:book url="http://www.bookstore.com/books/0321205758"
+     title="Contributing to Eclipse: Principles, Patterns, and Plug-Ins"/>
+  <booklist:book url="http://www.bookstore.com/books/0321245873"
+     title="Eclipse AspectJ: Aspect-Oriented Programming with AspectJ and the Eclipse AspectJ Development Tools"/>
+  <booklist:book url="http://www.bookstore.com/books/0321288157"
+     title="Eclipse Distilled"/>
+  <booklist:book url="http://www.bookstore.com/books/0131425420"
+     title="Eclipse Modeling Framework"/>
+  <booklist:book url="http://www.bookstore.com/books/0321334612"
+     title="Eclipse Rich Client Platform: Designing, Coding, and Packaging Java Applications"/>
+  <booklist:book url="http://www.bookstore.com/books/0321396855"
+     title="Eclipse Web Tools Platform: Developing Java Web Applications"/>
+  <booklist:book url="http://www.bookstore.com/books/032142672X"
+     title="Eclipse: Building Commercial-Quality Plug-Ins (2nd Edition)"/>
+  <booklist:book url="http://www.bookstore.com/books/0321443853"
+     title="Integrating and Extending BIRT"/>
+  <booklist:book url="http://www.bookstore.com/books/0321268385"
+     title="Official Eclipse 3.0 FAQs"/>
+  <booklist:book url="http://www.bookstore.com/books/0321256638"
+     title="Official Eclipse 3.0 FAQs"/>
+</booklist:bookList>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:description xmlns:wsdl="http://www.w3.org/ns/wsdl"
+   targetNamespace="http://www.bookstore.org/book/wsdl"
+   xmlns:tns="http://www.bookstore.org/book/wsdl"
+   xmlns:whttp="http://www.w3.org/ns/wsdl/http"
+   xmlns:wsdlx="http://www.w3.org/ns/wsdl-extensions"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+   xmlns:msg="http://www.bookstore.org/book/xsd">
+  <wsdl:documentation>
+     This is a WSDL 2.0 description of a sample bookstore service
+     listing for obtaining book information.
+  </wsdl:documentation>
+
+  <wsdl:types>
+    <xs:import namespace="http://www.bookstore.org/book/xsd" schemaLocation="book.xsd"/>
+  </wsdl:types>
+
+  <wsdl:interface name="BookInterface">
+    <wsdl:operation name="getBook" 
+       pattern="http://www.w3.org/ns/wsdl/in-out"
+       style="http://www.w3.org/ns/wsdl/style/iri" 
+       wsdlx:safe="true">
+      <wsdl:documentation>
+         This operation returns information about a specific book.
+      </wsdl:documentation>
+      <wsdl:input element="#none"/>
+      <wsdl:output element="msg:book" />
+    </wsdl:operation>
+  </wsdl:interface>
+
+  <wsdl:binding name="BookHTTPBinding"
+     type="http://www.w3.org/ns/wsdl/http"
+     interface="tns:BookInterface">
+    <wsdl:documentation>
+       The RESTful HTTP binding for the book service.
+    </wsdl:documentation>
+    <wsdl:operation ref="tns:getBook" whttp:method="GET"/>
+  </wsdl:binding>
+
+  <wsdl:service name="Book" interface="tns:BookInterface">
+    <wsdl:documentation>
+       The bookstore's book service.
+    </wsdl:documentation>
+    <wsdl:endpoint name="BookHTTPEndpoint"
+       binding="tns:BookHTTPBinding"
+       address="http://www.bookstore.com/books/0321396855">
+    </wsdl:endpoint>
+  </wsdl:service>
+</wsdl:description>

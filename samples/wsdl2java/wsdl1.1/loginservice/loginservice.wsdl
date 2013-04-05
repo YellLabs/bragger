@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions name="LoginService" targetNamespace="http://login"
+	xmlns:tns="http://login" xmlns="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:ns2="http://login/types">
+
+	<types>
+		<schema targetNamespace="http://login/types" xmlns:tns="http://login/types"
+			xmlns:soap11-enc="http://schemas.xmlsoap.org/soap/encoding/"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+			xmlns="http://www.w3.org/2001/XMLSchema">
+			
+			<import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+			
+			<element name="returnWebLoginElement">
+				<complexType>
+					<sequence>
+						<element ref="tns:soap_session_idElement" />
+						<element ref="tns:web_user_nameElement" />
+					</sequence>
+				</complexType>
+			</element>
+			
+			<element name="webLoginElement">
+				<complexType>
+					<sequence>
+						<element ref="tns:user_nameElement" />
+						<element ref="tns:user_passwordElement" />
+					</sequence>
+				</complexType>
+			</element>
+			
+			<element name="user_nameElement" type="xsd:string" />
+			<element name="user_passwordElement" type="xsd:string" />
+			<element name="soap_session_idElement" type="xsd:string" />
+			<element name="web_user_nameElement" type="xsd:string" />
+		</schema>
+	</types>
+
+	<message name="LoginEndpoint_webLogin">
+		<part name="parameters" element="ns2:webLoginElement" />
+	</message>
+	<message name="LoginEndpoint_webLoginResponse">
+		<part name="result" element="ns2:returnWebLoginElement" />
+	</message>
+
+	<portType name="LoginEndpoint">
+		<operation name="webLogin">
+			<input message="tns:LoginEndpoint_webLogin" name="LoginEndpoint_webLogin" />
+			<output message="tns:LoginEndpoint_webLoginResponse" name="LoginEndpoint_webLoginResponse" />
+		</operation>
+	</portType>
+
+	<binding name="LoginEndpointBinding" type="tns:LoginEndpoint">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+		<operation name="webLogin">
+			<soap:operation soapAction="webLogin" />
+			<input name="LoginEndpoint_webLogin">
+				<soap:body use="literal" />
+			</input>
+			<output name="LoginEndpoint_webLoginResponse">
+				<soap:body use="literal" />
+			</output>
+		</operation>
+	</binding>
+
+	<service name="LoginService">
+		<port name="LoginEndpointPort" binding="tns:LoginEndpointBinding">
+			<soap:address location="http://localhost:8080/axis2/services/LoginService" />
+		</port>
+	</service>
+	
+</definitions>
