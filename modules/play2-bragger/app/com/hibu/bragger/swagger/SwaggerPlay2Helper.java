@@ -1,19 +1,15 @@
 package com.hibu.bragger.swagger;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import play.Logger;
 import play.Play;
 import play.modules.swagger.ApiHelpInventory;
 import play.modules.swagger.PlayApiReader;
@@ -26,9 +22,7 @@ import com.wordnik.swagger.core.DocumentationOperation;
 import com.wordnik.swagger.core.DocumentationParameter;
 import com.wordnik.swagger.core.util.JsonUtil;
 
-public class SwaggerHelper {
-	
-	private static Logger logger = LoggerFactory.getLogger(SwaggerHelper.class.getName());
+public class SwaggerPlay2Helper {
 	
 	public static Set<String> basicTypes = new HashSet<String>();
 	
@@ -55,7 +49,7 @@ public class SwaggerHelper {
 			String resourceName = extractResourceName(resourcePath);
 			if (resourceName!=null) {
 				
-				String json = ApiHelpInventory.getPathHelpJson("/api-docs.json/"+resourceName, null);
+				String json = ApiHelpInventory.getPathHelpJson("/api-docs.json/"+resourceName, null); // TODO use inverse router! to resolve the first param
 				if (json!=null && !json.isEmpty() && controllerClasses.get(resourceName)!=null) {
 					
 					Documentation simpleDoc = JsonUtil.getJsonMapper().readValue(json, Documentation.class);
@@ -94,7 +88,7 @@ public class SwaggerHelper {
 					try {
 						
 						// operation response type
-						if (!SwaggerHelper.basicTypes.contains(operation.getResponseClass())) {
+						if (!SwaggerPlay2Helper.basicTypes.contains(operation.getResponseClass())) {
 							String operationResponseClassName = operation.getResponseTypeInternal();
 							modelClassesSet.add(Play.application().classloader().loadClass(operationResponseClassName));
 						}
@@ -103,7 +97,7 @@ public class SwaggerHelper {
 						if (operation.getParameters() != null) {
 							for (DocumentationParameter param : operation.getParameters()) {
 								if (StringUtils.isNotBlank(param.getValueTypeInternal()))
-									if (!SwaggerHelper.basicTypes.contains(operation.getResponseClass())) {
+									if (!SwaggerPlay2Helper.basicTypes.contains(operation.getResponseClass())) {
 										String paramInternalType = param.getParamType();
 										modelClassesSet.add(Class.forName(paramInternalType));
 									}
@@ -111,7 +105,7 @@ public class SwaggerHelper {
 						}
 						
 					} catch (ClassNotFoundException e) {
-						logger.error("model class not found: " + e.getMessage());
+						Logger.error("model class not found: " + e.getMessage());
 					}
 				}
 			}
