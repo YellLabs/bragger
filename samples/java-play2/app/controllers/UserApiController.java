@@ -1,21 +1,25 @@
 package controllers;
 
-import api.*;
-
-import com.wordnik.swagger.core.*;
-import com.wordnik.swagger.annotations.*;
-
-import javax.ws.rs.*;
-
-import models.*;
-import exception.*;
-import play.*;
-import play.mvc.*;
-
 import java.io.IOException;
-import java.util.List;
 
-import views.html.*;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+
+import models.User;
+import play.mvc.Result;
+import api.UserData;
+
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiError;
+import com.wordnik.swagger.annotations.ApiErrors;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiParamImplicit;
+import com.wordnik.swagger.annotations.ApiParamsImplicit;
 
 @Api(value = "/user", listingPath = "/api-docs.{format}/user", description = "Operations about user")
 public class UserApiController extends BaseApiController {

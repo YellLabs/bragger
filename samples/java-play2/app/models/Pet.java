@@ -60,8 +60,8 @@ public class Pet {
 		this.name = name;
 	}
 
-	@XmlElementWrapper(name = "photoUrls")
-	@XmlElement(name = "photoUrl")
+	//@XmlElementWrapper(name = "photoUrls")
+	//@XmlElement(name = "photoUrl")
 	public List<String> getPhotoUrls() {
 		return photoUrls;
 	}
@@ -70,8 +70,8 @@ public class Pet {
 		this.photoUrls = photoUrls;
 	}
 
-	@XmlElementWrapper(name = "tags")
-	@XmlElement(name = "tag")
+	//@XmlElementWrapper(name = "tags")
+	//@XmlElement(name = "tag")
 	public List<Tag> getTags() {
 		return tags;
 	}

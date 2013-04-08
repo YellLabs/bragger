@@ -37,3 +37,4 @@ GET     /user.json/:username         controllers.UserApiController.getUserByName
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /swagger-ui/*file            controllers.Assets.at(path="/public/swagger-ui-1.1.7", file)
+

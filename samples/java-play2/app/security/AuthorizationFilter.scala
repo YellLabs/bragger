@@ -13,30 +13,30 @@ import scala.collection.JavaConversions._
 
 class AuthorizationFilter extends ApiAuthorizationFilter {
   val methodSecurityAnotations = Map(
-    "/user.{format}" -> false,
-    "/pet.{format}" -> false,
-    "/store.{format}" -> true)
+    "/user.json" -> false,
+    "/pet.json" -> false,
+    "/store.json" -> true)
 
   val classSecurityAnotations = Map(
-    "GET:/pet.{format}/{petId}" -> false,
-    "POST:/pet.{format}" -> true,
-    "PUT:/pet.{format}" -> true,
-    "GET:/pet.{format}/findByStatus" -> false,
-    "GET:/pet.{format}/findByTags" -> false,
+    "GET:/pet.json/{petId}" -> false,
+    "POST:/pet.json" -> true,
+    "PUT:/pet.json" -> true,
+    "GET:/pet.json/findByStatus" -> false,
+    "GET:/pet.json/findByTags" -> false,
 
 
-    "GET:/store.{format}/order/{orderId}" -> true,
-    "DELETE:/store.{format}/order/{orderId}" -> true,
-    "POST:/store.{format}/order" -> true,
+    "GET:/store.json/order/{orderId}" -> true,
+    "DELETE:/store.json/order/{orderId}" -> true,
+    "POST:/store.json/order" -> true,
 
-    "POST:/user.{format}" -> false,
-    "POST:/user.{format}/createWithArray" -> false,
-    "POST:/user.{format}/createWithList" -> false,
-    "PUT:/user.{format}/{username}" -> true,
-    "DELETE:/user.{format}/{username}" -> true,
-    "GET:/user.{format}/{username}" -> false,
-    "GET:/user.{format}/login" -> false,
-    "GET:/user.{format}/logout" -> false)
+    "POST:/user.json" -> false,
+    "POST:/user.json/createWithArray" -> false,
+    "POST:/user.json/createWithList" -> false,
+    "PUT:/user.json/{username}" -> true,
+    "DELETE:/user.json/{username}" -> true,
+    "GET:/user.json/{username}" -> false,
+    "GET:/user.json/login" -> false,
+    "GET:/user.json/logout" -> false)
 
   var securekeyId = "special-key"
   var unsecurekeyId = "default-key"

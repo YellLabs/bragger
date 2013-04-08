@@ -31,6 +31,8 @@ public class BaseApiController extends Controller {
 		response().setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
 		response().setHeader("Access-Control-Allow-Headers", "Content-Type, api_key, Authorization");
 
-		return ok(w.toString());
+		return ok("{ \"Pet\": " + w.toString() + "}");
+		//return ok(w.toString());
 	}
+
 }
