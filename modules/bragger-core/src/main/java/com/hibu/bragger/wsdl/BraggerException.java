@@ -2,9 +2,6 @@ package com.hibu.bragger.wsdl;
 
 public class BraggerException extends RuntimeException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public BraggerException() {

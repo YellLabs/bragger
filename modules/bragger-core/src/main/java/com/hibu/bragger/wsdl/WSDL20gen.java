@@ -2,6 +2,7 @@ package com.hibu.bragger.wsdl;
 
 import java.net.URI;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
@@ -11,10 +12,8 @@ import org.ow2.easywsdl.schema.api.Element;
 import org.ow2.easywsdl.schema.api.Include;
 import org.ow2.easywsdl.schema.api.Schema;
 import org.ow2.easywsdl.schema.api.Sequence;
-import org.ow2.easywsdl.schema.api.SimpleType;
 import org.ow2.easywsdl.schema.api.Type;
 import org.ow2.easywsdl.schema.api.XmlException;
-import org.ow2.easywsdl.tooling.java2wsdl.util.XMLSorter;
 import org.ow2.easywsdl.wsdl.WSDLFactory;
 import org.ow2.easywsdl.wsdl.api.Binding;
 import org.ow2.easywsdl.wsdl.api.Description;
@@ -31,6 +30,8 @@ import org.ow2.easywsdl.wsdl.api.abstractItf.AbsItfDescription.WSDLVersionConsta
 import org.ow2.easywsdl.wsdl.api.abstractItf.AbsItfOperation.MEPPatternConstants;
 import org.ow2.easywsdl.wsdl.impl.wsdl20.BindingOperationImpl;
 import org.ow2.easywsdl.wsdl.impl.wsdl20.WSDLWriterImpl;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.ebmwebsourcing.easycommons.xml.XMLPrettyPrinter;
@@ -49,6 +50,8 @@ import com.wordnik.swagger.core.DocumentationParameter;
  *
  */
 public class WSDL20gen {
+	
+	//private static Logger logger = LoggerFactory.getLogger(WSDL20gen.class.getName());
 	
 	private static final String HTTP_WWW_W3_ORG_NS_WSDL = "http://www.w3.org/ns/wsdl";
 	private static final String HTTP_WWW_W3_ORG_NS_WSDL_SOAP = "http://www.w3.org/ns/wsdl/soap";
@@ -187,11 +190,11 @@ public class WSDL20gen {
 			
 			Document outDoc = writer.getDocument(desc20);			
 			
-			Document sortedDoc = XMLSorter.sortNodes(outDoc);
+			//Document sortedDoc = XMLSorter.sortNodes(outDoc);
 			
 			// TODO validate against latest schema at http://www.w3.org/2007/06/wsdl/wsdl20.xsd
 			
-			return XMLPrettyPrinter.prettyPrint(sortedDoc, "utf8");
+			return XMLPrettyPrinter.prettyPrint(outDoc, "utf8");
 			
 		} catch (WSDLException e) {
 			throw new BraggerException(e);
@@ -235,7 +238,7 @@ public class WSDL20gen {
 		// request message
 		Input requestMessage = wsdlAbstractOperation.createInput();
 		// NOTE! setting the message name on the requestMessage element, causes wrong client code generation by axis2
-		Element requestElement = createMethodRequestElement(typesSchema, elementsSchema, targetNamespace, modelsNamespace, operation);
+		Element requestElement = createMethodRequestElement(typesSchema, elementsSchema, targetNamespace, modelsNamespace, operation, basicTypes);
 		requestElement.setQName(new QName(modelsNamespace, operation.getNickname() + "_request"));
 		requestMessage.setElement(requestElement);
 		wsdlAbstractOperation.setInput(requestMessage);
@@ -279,8 +282,8 @@ public class WSDL20gen {
 			bindingOperation.getHttpQueryParameterSeparator();
 			
 		} catch (XmlException e) {
-			// TODO use plain logback to removedependency from Play
-			// Logger.error(e.getMessage());
+			// TODO
+			//logger.error(e.getMessage());
 		}
 		
 		return bindingOperation;
@@ -295,94 +298,7 @@ public class WSDL20gen {
 	 * @param operation
 	 * @return
 	 */
-	private static Element createMethodResponseElement(Schema typesSchema, Schema elementsSchema, String targetNamespace, String modelsNamespace, DocumentationOperation operation, Set<String> basicTypes) {
-		
-		Element responseMessageElement = elementsSchema.createElement();
-		
-		// set name attribute
-		responseMessageElement.setQName(new QName(modelsNamespace, WSDL20gen.TYPES + ":" + operation.getNickname() + "_response"));
-
-		// set type attribute
-		if (basicTypes.contains(operation.getResponseClass())) {
-			
-			String respType = operation.getResponseClass();
-			Type type = null;
-			
-			if (respType.equalsIgnoreCase("void")) {
-				type = EasyWsdlHelper.getComplexType(modelsNamespace, respType);
-				ComplexType ctype = (ComplexType) type;
-				ctype.setSequence(ctype.createSequence());
-			}
-			
-			if (respType.equalsIgnoreCase("string")) {
-				type = EasyWsdlHelper.getSimpleType(modelsNamespace, respType);
-				SimpleType stype = (SimpleType) type;
-				stype.setRestriction(stype.createRestriction());
-				stype.getRestriction().setBase(new QName("xs", "string"));
-			}
-			
-			if (typesSchema.getType(type.getQName())==null) {					
-				typesSchema.addType(type);
-			}
-			
-			responseMessageElement.setType(type);
-			
-		} else {
-			
-			// list of models
-			if (operation.getResponseClass().startsWith("List[")) {
-				
-				String modelName = (String) operation.getResponseClass().subSequence(5, operation.getResponseClass().length()-1);
-				Type modelType = EasyWsdlHelper.getComplexType(modelsNamespace, modelName);
-				
-				// declare a new type for the list of models
-				ComplexType listOfModelsType = EasyWsdlHelper.getComplexType(modelsNamespace, modelName + "List");
-				Element modelListElement = typesSchema.createElement();
-				modelListElement.setType(listOfModelsType);
-				listOfModelsType.setSequence(listOfModelsType.createSequence());
-				listOfModelsType.getSequence().addElement(listOfModelsType.getSequence().createElement());
-				
-				Element sequenceElement = listOfModelsType.getSequence().getElements().get(0);
-				sequenceElement.setType(modelType);
-				sequenceElement.setQName(new QName(modelName));
-				sequenceElement.setMinOccurs(0);
-				sequenceElement.setMaxOccurs("unbounded");
-				sequenceElement.setNillable(true);
-				
-				if (typesSchema.getType(listOfModelsType.getQName())==null) {					
-					typesSchema.addType(listOfModelsType);
-				}
-				
-				responseMessageElement.setType(listOfModelsType);
-				
-			} else {
-				
-				// single model
-				Type modelType = EasyWsdlHelper.getComplexType(modelsNamespace, operation.getResponseClass());
-				responseMessageElement.setType(modelType);
-			}
-
-		}
-		
-
-		// add element to schema
-		if (elementsSchema.getType(responseMessageElement.getQName())==null) {
-			elementsSchema.addElement(responseMessageElement);
-		}
-		
-		return responseMessageElement;
-	}
-		
-	/**
-	 * 
-	 * @param typesSchema
-	 * @param elementsSchema
-	 * @param targetNamespace
-	 * @param modelsNamespace
-	 * @param operation
-	 * @return
-	 */
-	private static Element createMethodRequestElement(Schema typesSchema, Schema elementsSchema, String targetNamespace, String modelsNamespace, DocumentationOperation operation) {
+	private static Element createMethodRequestElement(Schema typesSchema, Schema elementsSchema, String targetNamespace, String modelsNamespace, DocumentationOperation operation, Set<String> basicTypes) {
 
 		Element requestMessageElement = elementsSchema.createElement();
 		
@@ -399,11 +315,29 @@ public class WSDL20gen {
 				
 				Element paramElement = seq.createElement();
 				
-				// param name
-				if (docParam.getName()==null) {
+				System.out.println("docParam.getName():" + docParam.getName());
+				System.out.println("docParam.dataType():" + docParam.dataType());
+				System.out.println("docParam.getParamType():" + docParam.getParamType());
+				System.out.println();
+				
+				// NAME
+				if (docParam.getName()==null) { 
+					// body param hasn't got a name
 					paramElement.setQName(new QName(targetNamespace, docParam.getParamType()));
-				} else {
+				} else { 
+					// path elements and request params do have a name
 					paramElement.setQName(new QName(targetNamespace, docParam.getName()));
+				}
+				
+				// DATA TYPE
+				if (basicTypes.contains(docParam.getDataType())) {
+					// simple type
+					paramElement.setType(mapBasicDataType(docParam.dataType(), modelsNamespace));
+				} else {
+					// complex type
+					Type modelType = EasyWsdlHelper.getComplexType(modelsNamespace, docParam.getDataType());
+					paramElement.setType(modelType);
+					//paramElement.setType(EasyWsdlHelper.getSimpleType(null, "xs:string"));
 				}
 				
 				// required
@@ -430,4 +364,107 @@ public class WSDL20gen {
 		return requestMessageElement;
 	}
 
+	/**
+	 * 
+	 * @param typesSchema
+	 * @param elementsSchema
+	 * @param targetNamespace
+	 * @param modelsNamespace
+	 * @param operation
+	 * @return
+	 */
+	private static Element createMethodResponseElement(Schema typesSchema, Schema elementsSchema, String targetNamespace, String modelsNamespace, DocumentationOperation operation, Set<String> basicTypes) {
+		
+		Element responseMessageElement = elementsSchema.createElement();
+		
+		// set name attribute
+		responseMessageElement.setQName(new QName(modelsNamespace, WSDL20gen.TYPES + ":" + operation.getNickname() + "_response"));
+
+		// set type attribute
+		String responseTypeInternal = operation.getResponseTypeInternal();
+		String responseClass = operation.getResponseClass();
+		if (basicTypes.contains(responseClass)) {
+			
+			Type type = mapBasicDataType(responseClass, modelsNamespace);
+			
+			// add type definition to the types section of the wsdl document
+			if (typesSchema.getType(type.getQName())==null) {					
+				typesSchema.addType(type);
+			}
+			
+			// set this type as the type of the response
+			responseMessageElement.setType(type);
+			
+		} else {
+			
+			// list of models
+			if (responseClass.startsWith("List[")) {
+				
+				String modelName = (String) responseClass.subSequence(5, responseClass.length()-1);
+				Type modelType = EasyWsdlHelper.getComplexType(modelsNamespace, modelName);
+				
+				// declare a new type for the list of models
+				ComplexType listOfModelsType = EasyWsdlHelper.getComplexType(modelsNamespace, modelName + "List");
+				Element modelListElement = typesSchema.createElement();
+				modelListElement.setType(listOfModelsType);
+				listOfModelsType.setSequence(listOfModelsType.createSequence());
+				listOfModelsType.getSequence().addElement(listOfModelsType.getSequence().createElement());
+				
+				Element sequenceElement = listOfModelsType.getSequence().getElements().get(0);
+				sequenceElement.setType(modelType);
+				sequenceElement.setQName(new QName(modelName));
+				sequenceElement.setMinOccurs(0);
+				sequenceElement.setMaxOccurs("unbounded");
+				sequenceElement.setNillable(true);
+				
+				if (typesSchema.getType(listOfModelsType.getQName())==null) {					
+					typesSchema.addType(listOfModelsType);
+				}
+				
+				responseMessageElement.setType(listOfModelsType);
+				
+			} else {
+				
+				// single model
+				Type modelType = EasyWsdlHelper.getComplexType(modelsNamespace, responseClass);
+				responseMessageElement.setType(modelType);
+			}
+
+		}
+		
+
+		// add element to schema
+		if (elementsSchema.getType(responseMessageElement.getQName())==null) {
+			elementsSchema.addElement(responseMessageElement);
+		}
+		
+		return responseMessageElement;
+	}
+
+	/**
+	 * 
+	 * @param dataType
+	 * @param modelsNamespace
+	 * @return
+	 */
+	private static Type mapBasicDataType(String dataType, String modelsNamespace) {
+		Type type = null;
+		
+		if (dataType.equalsIgnoreCase("void")) {
+			type = EasyWsdlHelper.getComplexType(modelsNamespace, dataType);
+			ComplexType ctype = (ComplexType) type;
+			ctype.setSequence(ctype.createSequence());
+		}
+		
+		if (dataType.equalsIgnoreCase("string")) {
+			type = EasyWsdlHelper.getSimpleType(null, "xs:string");
+//			type = EasyWsdlHelper.getSimpleType(modelsNamespace, dataType);
+//			SimpleType stype = (SimpleType) type;
+//			stype.setRestriction(stype.createRestriction());
+//			stype.getRestriction().setBase(new QName("xs", "string"));
+		}
+		
+		return type;
+	}
+	
 }

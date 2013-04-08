@@ -11,18 +11,18 @@ import org.ow2.easywsdl.schema.api.SimpleType;
 public class EasyWsdlHelper {
 
 	public static SimpleType getSimpleType(String namespace, String name) {
-		SimpleType responseMessageType = null;
+		SimpleType simpleType = null;
 		try {
 			Schema newSchema = SchemaFactory.newInstance().newSchema();
 			newSchema.setTargetNamespace(namespace);
-			responseMessageType = (SimpleType) newSchema.createSimpleType();
-			responseMessageType.setQName(new QName(name));
+			simpleType = (SimpleType) newSchema.createSimpleType();
+			simpleType.setQName(new QName(name));
 			
 		} catch (SchemaException e) {
 			e.printStackTrace();
 		}
 		
-		return responseMessageType;	
+		return simpleType;	
 	}
 
 	public static ComplexType getComplexType(String namespace, String name) {

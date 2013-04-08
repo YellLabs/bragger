@@ -2,3 +2,5 @@ project/target/
 target/
 .classpath
 .project
+build.sbt.hibu
+
