@@ -1,34 +1,33 @@
 package com.hibu.api.petstore.client.controllers;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.json.JSONMessageFormatter;
-import org.apache.axis2.json.JSONOMBuilder;
 
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import com.hibu.api.petservice.Petservice;
 import com.hibu.api.petservice.PetserviceStub;
 import com.hibu.api.petservice.models.AddPetRequestType;
 import com.hibu.api.petservice.models.Category;
 import com.hibu.api.petservice.models.GetPetByIdRequestType;
 import com.hibu.api.petservice.models.Pet;
 import com.hibu.api.petservice.models.Tag;
+import com.hibu.bragger.apiclient.axis2.ApiClientFactory;
 
 public class PetStoreClientController extends Controller {
 
 	public static Result getPetById() throws Exception {
 		
 		try {
-			PetserviceStub stub = new PetserviceStub();
-			
-			stub._getServiceClient().getAxisConfiguration().addMessageBuilder(
-				"application/json", new JSONOMBuilder()
-			);
+
+			// instantiate the api client auto generated from the wsdl.
+			// the need for the second parameter is due to a bug in jettison 
+			Petservice petService = ApiClientFactory.newClient(Petservice.class, PetserviceStub.class, Pet.class);
 			
 			GetPetByIdRequestType request = new GetPetByIdRequestType();
 			request.setPetId("1");
 			
-			Pet pet = stub.getPetById(request);
+			Pet pet = petService.getPetById(request);
 			System.out.println("returning Pet " + pet.getName());
 
 			return ok("found Pet " + pet.getName());
@@ -41,31 +40,25 @@ public class PetStoreClientController extends Controller {
 			e.printStackTrace();
 			throw e;
 		}
-
 	}
-	
+
 	public static Result addPet() throws Exception {
 		
 		try {
 			
-			PetserviceStub stub = new PetserviceStub("http://localhost:9000/pet.json");
-			
-			stub._getServiceClient().getAxisConfiguration().addMessageFormatter(
-				"application/json", new JSONMessageFormatter()
-			);
-			stub._getServiceClient().getAxisConfiguration().addMessageBuilder(
-				"application/json", new JSONOMBuilder()
-			);
+			// instantiate the api client auto generated from the wsdl.
+			// the need for the second parameter is due to a bug in jettison
+			Petservice petService = ApiClientFactory.newClient(Petservice.class, PetserviceStub.class, Pet.class);
 			
 			AddPetRequestType request = new AddPetRequestType();
+			
 			Pet inputPet = new Pet();
 			inputPet.setId(12345);
 			inputPet.setName("myPet");
 			inputPet.setStatus("status");
 
 			//photoUrls
-			inputPet.getPhotoUrls().add("http://my.photos.com/photo_1.jpg");
-			inputPet.getPhotoUrls().add("http://my.photos.com/photo_2.jpg");
+			inputPet.getPhotoUrls().add("http://my.photos.com/photo_1.jpg"); //inputPet.getPhotoUrls().add("http://my.photos.com/photo_2.jpg");
 						
 			// tags
 			Tag tag1 = new Tag();
@@ -74,8 +67,7 @@ public class PetStoreClientController extends Controller {
 			Tag tag2 = new Tag();
 			tag2.setId(123);
 			tag2.setName("cinema");
-			inputPet.getTags().add(tag1);
-			inputPet.getTags().add(tag2);
+			inputPet.getTags().add(tag1); //inputPet.getTags().add(tag2);
 			
 			// category
 			Category cat = new Category();
@@ -84,8 +76,8 @@ public class PetStoreClientController extends Controller {
 			inputPet.setCategory(cat);
 			
 			request.setBody(inputPet);
-			
-			com.hibu.api.petservice.models.Void response = stub.addPet(request);
+
+			petService.addPet(request);
 			
 			return ok("added Pet");
 			

@@ -14,4 +14,9 @@ dist
 /RUNNING_PID
 /.settings
 .target/
+bin/
+
+codegen/build.xml
+codegen/src/
+codegen/test/
 

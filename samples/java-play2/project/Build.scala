@@ -11,7 +11,7 @@ object ApplicationBuild extends Build {
 		//"com.hibu" %% "play2-bragger" % appVersion
 	)
 
-	lazy val braggerCoreSubProject = Project(id = "bragger-core", 
+	lazy val braggerCore = Project(id = "bragger-core", 
 	    base = file("./linked-modules/bragger-core"), 
 	    settings = Project.defaultSettings ++ Seq(
 	        libraryDependencies ++= Seq(
@@ -19,6 +19,7 @@ object ApplicationBuild extends Build {
 	            // commons
         		"commons-io" % "commons-io" % "2.4",
         		"javax.mail" % "mail" % "1.4",
+        		"org.slf4j" % "slf4j-api" % "1.7.2",
         		
         		// axis
         		"axis" % "axis-wsdl4j" % "1.5.1",
@@ -30,7 +31,12 @@ object ApplicationBuild extends Build {
         		
         		// using patched jettison in /lib folder
         		"org.apache.axis2" % "axis2-json" % "1.6.2" exclude("org.codehaus.jettison", "jettison"),
-        		//"org.codehaus.jettison" % "jettison" % "1.2",
+
+        		// using patched jettison: 
+        		// see http://www.marcusschiesser.de/2009/01/building-a-json-web-service-with-java-and-axis2/
+        		// see http://markmail.org/message/cu2tw43qnrqgqgwp
+        		// see http://dktiwari-hbti.blogspot.co.uk/2012/07/java-web-services.html
+        		"org.codehaus.jettison" % "jettison" % "1.3.3.hibu",
         		
         		"backport-util-concurrent" % "backport-util-concurrent" % "3.1",
         		
@@ -79,29 +85,29 @@ object ApplicationBuild extends Build {
 		EclipseKeys.skipProject := true
 	).dependsOn(
 	    swaggerPlay2,
-	    braggerCoreSubProject
+	    braggerCore
 	).aggregate(
 	    swaggerPlay2,
-	    braggerCoreSubProject
+	    braggerCore
 	)
 	
 	lazy val main = play.Project(appName, appVersion, appDependencies).settings(
-
-		// sbt eclipse
-        EclipseKeys.skipParents in ThisBuild := false,
-        EclipseKeys.withSource in ThisBuild := true,
                 
 		// bragger repo
 		resolvers in ThisBuild += "github pages repo" at "http://yelllabs.github.com/bragger",
 		// easywsdl
 		resolvers in ThisBuild += "petalslink" at "http://maven.petalslink.com/public",
-		// typesafe
-		resolvers in ThisBuild += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
-		// public maven repos
-		resolvers in ThisBuild += "repo1.maven.org" at "http://repo1.maven.org/maven2",
-		resolvers in ThisBuild += "sonatype-snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
-		resolvers in ThisBuild += "sonatype-releases" at "https://oss.sonatype.org/content/repositories/releases",
-		resolvers in ThisBuild += "java-net" at "http://download.java.net/maven/2"
+		
+		// with these lines, the 'play eclipse' command adds automatically the source folders to the porject
+		// remove these when getting the linked modules as managed dependencies
+		// put here an entry for each element specified in the dependsOn (directly or recursively across all the subprojects)
+		unmanagedSourceDirectories in Compile <+= baseDirectory( _ / "linked-modules" / "bragger-core" / "src" / "main" / "java" ),
+		unmanagedSourceDirectories in Compile <+= baseDirectory( _ / "linked-modules" / "play2-bragger" / "app"),
+		unmanagedSourceDirectories in Compile <+= baseDirectory( _ / "linked-modules" / "swagger-play2" / "app"),
+		
+		// sbt eclipse
+		EclipseKeys.skipParents in ThisBuild := false,
+		EclipseKeys.withSource in ThisBuild := true
 		
 	).dependsOn(
 	    play2Bragger
