@@ -2,7 +2,6 @@ package com.hibu.bragger.wsdl;
 
 import java.net.URI;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
@@ -30,8 +29,8 @@ import org.ow2.easywsdl.wsdl.api.abstractItf.AbsItfDescription.WSDLVersionConsta
 import org.ow2.easywsdl.wsdl.api.abstractItf.AbsItfOperation.MEPPatternConstants;
 import org.ow2.easywsdl.wsdl.impl.wsdl20.BindingOperationImpl;
 import org.ow2.easywsdl.wsdl.impl.wsdl20.WSDLWriterImpl;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.ebmwebsourcing.easycommons.xml.XMLPrettyPrinter;
@@ -51,7 +50,7 @@ import com.wordnik.swagger.core.DocumentationParameter;
  */
 public class WSDL20gen {
 	
-	//private static Logger logger = LoggerFactory.getLogger(WSDL20gen.class.getName());
+	private static Logger logger = LoggerFactory.getLogger(WSDL20gen.class.getName());
 	
 	private static final String HTTP_WWW_W3_ORG_NS_WSDL = "http://www.w3.org/ns/wsdl";
 	private static final String HTTP_WWW_W3_ORG_NS_WSDL_SOAP = "http://www.w3.org/ns/wsdl/soap";
@@ -273,17 +272,30 @@ public class WSDL20gen {
 
 		try {
 			
-			bindingOperation.getOtherAttributes().put(new QName(BindingConstants.HTTP_BINDING4WSDL20.value().toString(), "location"), basePath);
-			bindingOperation.getOtherAttributes().put(new QName(BindingConstants.HTTP_BINDING4WSDL20.value().toString(), "method"), operation.getHttpMethod());
-			bindingOperation.getOtherAttributes().put(new QName(BindingConstants.HTTP_BINDING4WSDL20.value().toString(), "inputSerialization") , "application/json");
-			bindingOperation.getOtherAttributes().put(new QName(BindingConstants.HTTP_BINDING4WSDL20.value().toString(), "outputSerialization") , "application/json");
+			bindingOperation.getOtherAttributes().put(
+				new QName(BindingConstants.HTTP_BINDING4WSDL20.value().toString(), "location"), 
+				basePath);
+			
+			bindingOperation.getOtherAttributes().put(
+				new QName(BindingConstants.HTTP_BINDING4WSDL20.value().toString(), "method"), 
+				operation.getHttpMethod());
+			
+			if ("POST".equals(operation.getHttpMethod()) || "PUT".equals(operation.getHttpMethod())) {
+				bindingOperation.getOtherAttributes().put(
+					new QName(BindingConstants.HTTP_BINDING4WSDL20.value().toString(), "inputSerialization") , 
+					"application/json");
+			}
+			
+			bindingOperation.getOtherAttributes().put(
+				new QName(BindingConstants.HTTP_BINDING4WSDL20.value().toString(), "outputSerialization") , 
+				"application/json");
+			
 			bindingOperation.getHttpContentEncodingDefault();
 			bindingOperation.getHttpFaultSerialization();
 			bindingOperation.getHttpQueryParameterSeparator();
 			
 		} catch (XmlException e) {
-			// TODO
-			//logger.error(e.getMessage());
+			logger.error(e.getMessage());
 		}
 		
 		return bindingOperation;
@@ -381,7 +393,6 @@ public class WSDL20gen {
 		responseMessageElement.setQName(new QName(modelsNamespace, WSDL20gen.TYPES + ":" + operation.getNickname() + "_response"));
 
 		// set type attribute
-		String responseTypeInternal = operation.getResponseTypeInternal();
 		String responseClass = operation.getResponseClass();
 		if (basicTypes.contains(responseClass)) {
 			
@@ -442,7 +453,6 @@ public class WSDL20gen {
 	}
 
 	/**
-	 * 
 	 * @param dataType
 	 * @param modelsNamespace
 	 * @return
@@ -458,6 +468,7 @@ public class WSDL20gen {
 		
 		if (dataType.equalsIgnoreCase("string")) {
 			type = EasyWsdlHelper.getSimpleType(null, "xs:string");
+			//TODO !
 //			type = EasyWsdlHelper.getSimpleType(modelsNamespace, dataType);
 //			SimpleType stype = (SimpleType) type;
 //			stype.setRestriction(stype.createRestriction());
