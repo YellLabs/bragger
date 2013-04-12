@@ -9,7 +9,7 @@ object ApplicationBuild extends Build {
 	val appVersion = "1.2.3"
 	
 	val appDependencies = Seq(
-		//"com.hibu" % "play2-bragger" % "1.2.3",
+		"com.hibu" %% "play2-bragger" % "1.2.3",
 		javaCore,
 		javaJdbc,
 		javaEbean
@@ -33,9 +33,9 @@ object ApplicationBuild extends Build {
 		EclipseKeys.withSource in ThisBuild := true
 
 	).dependsOn(
-		play2Bragger
+		//play2Bragger
 	).aggregate(
-		play2Bragger
+		//play2Bragger
 	)
 	
 }

@@ -8,7 +8,7 @@ object ApplicationBuild extends Build {
 	val appVersion = "1.2.3"
 
 	val appDependencies: Seq[sbt.ModuleID] = Seq(
-		//"com.hibu" %% "play2-bragger" % appVersion
+		"com.hibu" %% "play2-bragger" % appVersion
 	)
 	
 	lazy val play2Bragger = ProjectRef(file("../../modules/play2-bragger"), "play2-bragger")
@@ -25,9 +25,9 @@ object ApplicationBuild extends Build {
 		EclipseKeys.withSource in ThisBuild := false
 		
 	).dependsOn(
-	    play2Bragger
+	    //play2Bragger
 	).aggregate(
-	    play2Bragger
+	    //play2Bragger
 	)
 		
 }

@@ -44,7 +44,7 @@ object ApplicationBuild extends Build {
 			
 			organization in ThisBuild := "com.hibu",
 			version in ThisBuild := appVersion,
-			publishArtifact in (Compile, packageDoc) := false,
+			publishArtifact in (Compile, packageDoc) := true,
 			publishMavenStyle in ThisBuild := true,
 			autoScalaLibrary := false,			
 			crossPaths := false,			
