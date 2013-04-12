@@ -12,6 +12,7 @@ import com.hibu.api.petservice.models.Category;
 import com.hibu.api.petservice.models.GetPetByIdRequestType;
 import com.hibu.api.petservice.models.Pet;
 import com.hibu.api.petservice.models.Tag;
+import com.hibu.api.petservice.models.UpdatePetRequestType;
 import com.hibu.bragger.apiclient.axis2.ApiClientFactory;
 
 public class PetStoreClientController extends Controller {
@@ -88,7 +89,43 @@ public class PetStoreClientController extends Controller {
 			e.printStackTrace();
 			throw e;
 		}
+	}
+	
+	/**
+	 * renaming and adding a photoUrl to the Pet with id=1
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public static Result updatePet() throws Exception {
+		
+		try {
+			
+			// instantiate the api client auto generated from the wsdl.
+			// the need for the second parameter is due to a bug in jettison
+			Petservice petService = ApiClientFactory.newClient(Petservice.class, PetserviceStub.class, Pet.class);
+			
+			UpdatePetRequestType request = new UpdatePetRequestType();
+			
+			Pet inputPet = new Pet();
+			inputPet.setId(1);
+			inputPet.setName("Pet new name");
+			inputPet.getPhotoUrls().add("http://my.photos.com/photo_1.jpg");
+			request.setBody(inputPet);
+
+			request.setBody(inputPet);
+			petService.updatePet(request);
+						
+			return ok("updated Pet");
+			
+		} catch (AxisFault e) {
+			e.printStackTrace();
+			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 		
 	}
-		
+	
 }
