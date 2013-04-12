@@ -6,7 +6,7 @@ import com.typesafe.sbteclipse.core.EclipsePlugin._
 object ApplicationBuild extends Build {
 
 	val appName    = "play2-bragger"
-	val appVersion = "1.2.3-SNAPSHOT"
+	val appVersion = "1.2.3"
 
 	val appDependencies = Seq(
 		//"com.hibu" % "bragger-core" % appVersion exclude("com.wordnik", "swagger-core_2.9.1"),

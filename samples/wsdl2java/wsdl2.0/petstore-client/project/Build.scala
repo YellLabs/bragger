@@ -6,10 +6,10 @@ import com.typesafe.sbteclipse.core.EclipsePlugin.EclipseKeys
 object ApplicationBuild extends Build {
 
 	val appName    = "petstore-client"
-	val appVersion = "1.2.3-SNAPSHOT"
+	val appVersion = "1.2.3"
 	
 	val appDependencies = Seq(
-		//"com.hibu" % "play2-bragger" % "1.2.3-SNAPSHOT",
+		//"com.hibu" % "play2-bragger" % "1.2.3",
 		javaCore,
 		javaJdbc,
 		javaEbean
