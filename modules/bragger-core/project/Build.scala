@@ -9,14 +9,9 @@ object ApplicationBuild extends Build {
 
 	val appDependencies = Seq()
 	
-	lazy val root = Project(
-		
-		id = appName, 
-		
+	lazy val root = Project(id = appName, 
 		base = file("."),
-		
 		settings = Project.defaultSettings ++ Seq(
-				
 			libraryDependencies ++= Seq(
 
 	            // commons
@@ -48,22 +43,16 @@ object ApplicationBuild extends Build {
 				"com.ebmwebsourcing.easycommons" % "easycommons.xml" % "1.1", // even though it's required for easywsdl-wsdl to function, it's not part of its dependency tree
 				
 				// swagger
-				"com.wordnik" % "swagger-core_2.9.1" % "1.2.2-SNAPSHOT", // exclude("org.slf4j", "slf4j-log4j12") // 1.6.3
-
+				"com.wordnik" % "swagger-core_2.9.1" % "1.2.2-SNAPSHOT" // 1.6.3
 			),
 			
 			publishArtifact in (Compile, packageDoc) := false,
-			
-			autoScalaLibrary := false,
-			
+			autoScalaLibrary := false,			
 			crossPaths := false,
-			
 			testOptions += Tests.Argument(TestFrameworks.JUnit, "-v"),
 			
 			organization in ThisBuild := "com.hibu",
-			
 			version in ThisBuild := appVersion,
-			
 			publishMavenStyle in ThisBuild := true,
 			
 			// don't publish parent project
