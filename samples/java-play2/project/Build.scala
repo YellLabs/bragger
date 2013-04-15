@@ -1,5 +1,6 @@
 import sbt._
 import Keys._
+import play.Project._
 import com.typesafe.sbteclipse.core.EclipsePlugin.EclipseKeys
 
 object ApplicationBuild extends Build {
@@ -8,11 +9,11 @@ object ApplicationBuild extends Build {
 	val appVersion = "1.3.0-SNAPSHOT"
 
 	val appDependencies = Seq(
-		"com.hibu" %% "play2-bragger" % appVersion,
+		"com.hibu" %% "bragger-play2" % appVersion,
 		javaCore
 	)
 	
-	lazy val play2Bragger = ProjectRef(file("../../modules/play2-bragger"), "play2-bragger")
+	lazy val play2Bragger = ProjectRef(file("../../modules/bragger-play2"), "bragger-play2")
 		
 	lazy val main = play.Project(appName, appVersion, appDependencies).settings(
                 
@@ -30,5 +31,5 @@ object ApplicationBuild extends Build {
 	).aggregate(
 	    play2Bragger
 	)
-		
+	
 }
