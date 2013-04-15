@@ -48,8 +48,10 @@ public class SwaggerPlay2Helper {
 			
 			String resourceName = extractResourceName(resourcePath);
 			if (resourceName!=null) {
+				                        
+				String swaggerMainUrl = com.wordnik.swagger.play.controllers.routes.ApiHelpController.getResource(resourceName).url();
 				
-				String json = ApiHelpInventory.getPathHelpJson("/api-docs.json/"+resourceName, null); // TODO use inverse router! to resolve the first param
+				String json = ApiHelpInventory.getPathHelpJson(swaggerMainUrl, null);
 				if (json!=null && !json.isEmpty() && controllerClasses.get(resourceName)!=null) {
 					
 					Documentation simpleDoc = JsonUtil.getJsonMapper().readValue(json, Documentation.class);

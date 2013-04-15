@@ -47,8 +47,11 @@ public class BraggerController extends Controller {
 		
 		try {
 			
-			Documentation resourceDoc = SwaggerPlay2Helper.readApiDocs().get(resourceName); 
-			String wsdlAsString = WSDL20gen.generateWSDL20(resourceName, resourceDoc, SwaggerPlay2Helper.basicTypes);
+			Documentation resourceDoc = SwaggerPlay2Helper.readApiDocs().get(resourceName);
+
+			String xsdUrl = com.hibu.bragger.controllers.routes.BraggerController.getXSD().url();
+			String wsdlAsString = WSDL20gen.generateWSDL20(resourceName, resourceDoc, SwaggerPlay2Helper.basicTypes, xsdUrl);
+
 			return ok(wsdlAsString).as("text/xml");
 		
 		} catch (IllegalArgumentException e) {

@@ -2,20 +2,6 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Bragger urls
-GET     /api-docs.xsd                com.hibu.bragger.controllers.BraggerController.getXSD
-GET     /api-docs.wsdl/:resourceName com.hibu.bragger.controllers.BraggerController.getWSDL(resourceName: String)
-
-# Swagger urls
-GET     /api-docs.json               controllers.ApiHelpController.getResources
-GET     /api-docs.json/pet           controllers.ApiHelpController.getResource(path = "/api-docs.json/pet")
-GET     /api-docs.json/user          controllers.ApiHelpController.getResource(path = "/api-docs.json/user")
-GET     /api-docs.json/store         controllers.ApiHelpController.getResource(path = "/api-docs.json/store")
-GET     /api-docs.xml                controllers.ApiHelpController.getResources
-GET     /api-docs.xml/pet            controllers.ApiHelpController.getResource(path = "/api-docs.xml/pet")
-GET     /api-docs.xml/user           controllers.ApiHelpController.getResource(path = "/api-docs.xml/user")
-GET     /api-docs.xml/store          controllers.ApiHelpController.getResource(path = "/api-docs.xml/store")
-
 POST    /pet.json                    controllers.PetApiController.addPet
 PUT     /pet.json                    controllers.PetApiController.updatePet
 GET     /pet.json/findByStatus       controllers.PetApiController.findPetsByStatus(status)
@@ -37,4 +23,8 @@ GET     /user.json/:username         controllers.UserApiController.getUserByName
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /swagger-ui/*file            controllers.Assets.at(path="/public/swagger-ui-1.1.7", file)
+
+
+# bragger urls from the bragger-play2 module routes file
+->      /docs                         com.hibu.bragger.Routes
 

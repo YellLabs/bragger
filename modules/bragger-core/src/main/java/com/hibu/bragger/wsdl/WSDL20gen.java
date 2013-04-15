@@ -6,7 +6,6 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.ow2.easywsdl.schema.api.ComplexType;
-import org.ow2.easywsdl.schema.api.Documentation;
 import org.ow2.easywsdl.schema.api.Element;
 import org.ow2.easywsdl.schema.api.Include;
 import org.ow2.easywsdl.schema.api.Schema;
@@ -34,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.ebmwebsourcing.easycommons.xml.XMLPrettyPrinter;
+import com.wordnik.swagger.core.Documentation;
 import com.wordnik.swagger.core.DocumentationEndPoint;
 import com.wordnik.swagger.core.DocumentationOperation;
 import com.wordnik.swagger.core.DocumentationParameter;
@@ -56,8 +56,7 @@ public class WSDL20gen {
 	private static final String HTTP_WWW_W3_ORG_NS_WSDL_SOAP = "http://www.w3.org/ns/wsdl/soap";
 	private static final String HTTP_WWW_W3_ORG_NS_WSDL_HTTP = "http://www.w3.org/ns/wsdl/http";
 	private static final String HTTP_WWW_W3_ORG_NS_WSDL_EXTENSIONS = "http://www.w3.org/ns/wsdl-extensions";
-	
-	private static final String XSD_URL_PATH = "/api-docs.xsd";
+
 	private static final String BINDING_PROTOCOL_HTTP = "http";
 	private static final String WSDL20_DOCUMENT_NAME_SUFFIX = "_wsdl20_document";
 	private static final String INTERFACE_NAME_SUFFIX = "interface";
@@ -73,14 +72,14 @@ public class WSDL20gen {
 	 * @return
 	 * @throws BraggerException
 	 */
-	public static String generateWSDL20(String resourceName, com.wordnik.swagger.core.Documentation resourceDoc, Set<String> basicTypes) {
+	public static String generateWSDL20(String resourceName, Documentation resourceDoc, Set<String> basicTypes, String xsdUrl) {
 		
 		if (resourceDoc==null) {
 			throw new IllegalArgumentException("resourceName=" + resourceName + " not found");
 		}
 
 		try {
-
+			
 			String webServiceName = resourceName + SERVICE_NAME_SUFFIX;
 			String descriptionName = webServiceName + WSDL20_DOCUMENT_NAME_SUFFIX;
 			
@@ -107,7 +106,7 @@ public class WSDL20gen {
 			Schema modelsSchema = types.createSchema();
 			modelsSchema.setTargetNamespace(modelsNamespace);
 			Include includeDef = modelsSchema.createInclude();
-			includeDef.setLocationURI(new URI(resourceDoc.getBasePath() + XSD_URL_PATH));
+			includeDef.setLocationURI(new URI(resourceDoc.getBasePath() + xsdUrl));
 			modelsSchema.addInclude(includeDef);
 			types.addSchema(modelsSchema);
 
@@ -221,7 +220,7 @@ public class WSDL20gen {
 		wsdlAbstractOperation.setQName(new QName(targetNamespace, operation.getNickname()));
 		
 		// TODO this is not printed
-		Documentation opDescription = wsdlAbstractOperation.createDocumentation();
+		org.ow2.easywsdl.schema.api.Documentation opDescription = wsdlAbstractOperation.createDocumentation();
 		opDescription.setContent("Summary: " + operation.getSummary() + " - Notes: " + operation.getNotes());
 		wsdlAbstractOperation.setDocumentation(opDescription);
 		

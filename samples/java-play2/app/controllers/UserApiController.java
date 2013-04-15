@@ -21,7 +21,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiParamImplicit;
 import com.wordnik.swagger.annotations.ApiParamsImplicit;
 
-@Api(value = "/user", listingPath = "/api-docs.{format}/user", description = "Operations about user")
+@Api(value = "/user", listingPath = "/docs/api-docs.{format}/user", description = "Operations about user")
 public class UserApiController extends BaseApiController {
 	static UserData userData = new UserData();
 

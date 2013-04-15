@@ -21,7 +21,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiParamImplicit;
 import com.wordnik.swagger.annotations.ApiParamsImplicit;
 
-@Api(value = "/pet", listingPath = "/api-docs.{format}/pet", description = "Operations about pets")
+@Api(value = "/pet", listingPath = "/docs/api-docs.{format}/pet", description = "Operations about pets")
 public class PetApiController extends BaseApiController {
 	static PetData petData = new PetData();
 
@@ -36,6 +36,7 @@ public class PetApiController extends BaseApiController {
 	})
 	public static Result getPetById(@ApiParam(value="ID of pet that needs to be fetched", allowableValues="range[1,5]", required=true) @PathParam("petId") String petId) {
 		Logger.info(PetApiController.class.getSimpleName()+ ": getPetById: "+ petId+ " - start");
+
 		return JsonResponse(petData.getPetbyId(Long.parseLong(petId)));
 	}
 	

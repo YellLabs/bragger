@@ -2,21 +2,22 @@ package controllers;
 
 import java.io.IOException;
 
-import api.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
-import com.wordnik.swagger.core.*;
-import com.wordnik.swagger.annotations.*;
+import models.Order;
+import play.mvc.Result;
+import api.StoreData;
 
-import javax.ws.rs.*;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiError;
+import com.wordnik.swagger.annotations.ApiErrors;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiParamImplicit;
+import com.wordnik.swagger.annotations.ApiParamsImplicit;
 
-import models.*;
-import exception.*;
-import play.*;
-import play.mvc.*;
-
-import views.html.*;
-
-@Api(value = "/store", listingPath = "/api-docs.{format}/store", description = "Operations about store")
+@Api(value = "/store", listingPath = "/docs/api-docs.{format}/store", description = "Operations about store")
 public class StoreApiController extends BaseApiController {
 	static StoreData storeData = new StoreData();
 

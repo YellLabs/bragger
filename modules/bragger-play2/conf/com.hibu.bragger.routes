@@ -1,0 +1,10 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Bragger urls
+GET     /api-docs.xsd                com.hibu.bragger.controllers.BraggerController.getXSD
+GET     /api-docs.wsdl/:resourceName com.hibu.bragger.controllers.BraggerController.getWSDL(resourceName: String)
+
+# Swagger urls: from swagger-play2 module routes file
+->      /                            com.wordnik.swagger.play.Routes
