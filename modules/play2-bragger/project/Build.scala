@@ -9,8 +9,8 @@ object ApplicationBuild extends Build {
 	val appVersion = "1.2.3"
 
 	val appDependencies = Seq(
-		//"com.hibu" % "bragger-core" % appVersion exclude("com.wordnik", "swagger-core_2.9.1"),
-		//"com.wordnik" %% "swagger-play2" % "1.2.1.hibu-SNAPSHOT"
+		"com.hibu" % "bragger-core" % appVersion exclude("com.wordnik", "swagger-core_2.9.1"),
+		"com.wordnik" %% "swagger-play2" % "1.2.1.hibu-SNAPSHOT"
 	)
 	
 	lazy val swaggerPlay2 = ProjectRef(file("../../../swagger-core/modules/swagger-play2"), "swagger-play2")

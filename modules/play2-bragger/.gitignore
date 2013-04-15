@@ -11,7 +11,11 @@ dist
 /.idea_modules
 /.classpath
 /.project
-/RUNNING_PID
 /.settings
 .target/
+.cache
 
+# fabric 
+fabfile.pyc
+build.sbt
+publish_credentials.template

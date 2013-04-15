@@ -1,6 +1,17 @@
+
+# eclipse files
 project/target/
 target/
 .classpath
 .project
-build.sbt.hibu
+
+# compile python files
+fabfile.pyc
+
+# fabric templates
+build.sbt
+publish_credentials
+
+
+
 
