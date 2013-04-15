@@ -10,12 +10,6 @@ except ImportError:
     print '\nERROR: Could not import yellfabric\n'
     pass
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# global environment settings
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-env.project_name = "petstore-client"
-env.project_version = "1.2.3"
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # template files to be rendered
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -28,21 +22,15 @@ env.custom_config_files = [
 # variables required to render local settings
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 env.settings_vars = [
-    "project_name",
-    "project_version",
     "artifactory_host",
-    "artifactory_user",
     "artifactory_password",
     "custom_config_files"
 ]
-
 
 @runs_once
 def templates(data):
     load_extdata(data)
     env.artifactory_host = extlookup("artifactory_host")
-    env.artifactory_user = "play"
     env.artifactory_password = extlookup("project_placesapi_artifactory_password")
     utils.render_custom_templates(".", env.settings_vars, False)
-
 

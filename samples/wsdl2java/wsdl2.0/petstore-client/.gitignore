@@ -20,3 +20,5 @@ codegen/build.xml
 codegen/src/
 codegen/test/
 
+build.sbt
+publish_credentials

@@ -6,13 +6,11 @@ import com.typesafe.sbteclipse.core.EclipsePlugin.EclipseKeys
 object ApplicationBuild extends Build {
 
 	val appName    = "petstore-client"
-	val appVersion = "1.2.3"
+	val appVersion = "1.3.0-SNAPSHOT"
 	
 	val appDependencies = Seq(
-		"com.hibu" %% "play2-bragger" % "1.2.3",
-		javaCore,
-		javaJdbc,
-		javaEbean
+		"com.hibu" %% "play2-bragger" % appVersion,
+		javaCore
 	)
 	
 	lazy val play2Bragger = ProjectRef(file("../../../../modules/play2-bragger"), "play2-bragger")
@@ -35,9 +33,9 @@ object ApplicationBuild extends Build {
 		EclipseKeys.withSource in ThisBuild := true
 
 	).dependsOn(
-		//play2Bragger
+		play2Bragger
 	).aggregate(
-		//play2Bragger
+		play2Bragger
 	)
 	
 }
