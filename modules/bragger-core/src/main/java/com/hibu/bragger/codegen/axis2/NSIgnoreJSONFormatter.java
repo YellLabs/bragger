@@ -1,4 +1,4 @@
-package com.hibu.bragger.apiclient.axis2;
+package com.hibu.bragger.codegen.axis2;
 
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;

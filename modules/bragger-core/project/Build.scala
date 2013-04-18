@@ -22,6 +22,8 @@ object ApplicationBuild extends Build {
 				// ====== dependencies to use the client stubs auto generated form wsdl ======
         		"axis" % "axis-wsdl4j" % "1.5.1",
         		"org.apache.axis2" % "axis2-adb" % "1.6.2",
+        		"org.apache.axis2" % "axis2-jaxbri" % "1.6.2",
+        		"org.apache.axis2" % "axis2-codegen" % "1.6.2" ,
         		"org.apache.axis2" % "axis2-java2wsdl" % "1.6.2" excludeAll(
         			ExclusionRule(organization = "org.apache.geronimo.specs"),
         			ExclusionRule(organization = "javax.servlet")
@@ -44,17 +46,20 @@ object ApplicationBuild extends Build {
 			
 			organization in ThisBuild := "com.hibu",
 			version in ThisBuild := appVersion,
-			publishArtifact in (Compile, packageDoc) := true,
+			
+			publishArtifact in (Test, packageSrc) := false,
 			publishMavenStyle in ThisBuild := true,
+			
 			autoScalaLibrary := false,			
 			crossPaths := false,			
 			testOptions += Tests.Argument(TestFrameworks.JUnit, "-v"),
 			
-			//resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository",
 			// bragger repo
 			resolvers in ThisBuild += "github pages repo" at "http://yelllabs.github.com/bragger",
 			// easywsdl 
 			resolvers in ThisBuild += "Petalslink Maven" at "http://maven.petalslink.com/public",
+			// local maven repo
+			//resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository",
 			
 			// sbteclipse settings
 			EclipseKeys.executionEnvironment in ThisBuild := Some(EclipseExecutionEnvironment.JavaSE16),

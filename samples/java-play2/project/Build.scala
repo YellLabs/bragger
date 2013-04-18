@@ -12,8 +12,6 @@ object ApplicationBuild extends Build {
 		"com.hibu" %% "bragger-play2" % appVersion,
 		javaCore
 	)
-	
-	lazy val play2Bragger = ProjectRef(file("../../modules/bragger-play2"), "bragger-play2")
 		
 	lazy val main = play.Project(appName, appVersion, appDependencies).settings(
                 
@@ -27,9 +25,11 @@ object ApplicationBuild extends Build {
 		EclipseKeys.withSource in ThisBuild := false
 		
 	).dependsOn(
-	    play2Bragger
+	    //play2Bragger
 	).aggregate(
-	    play2Bragger
+	    //play2Bragger
 	)
+	
+	lazy val play2Bragger = ProjectRef(file("../../modules/bragger-play2"), "bragger-play2")
 	
 }

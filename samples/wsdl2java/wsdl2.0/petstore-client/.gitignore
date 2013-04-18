@@ -20,5 +20,9 @@ codegen/build.xml
 codegen/src/
 codegen/test/
 
-build.sbt
+hibu.sbt
 publish_credentials
+
+project/.classpath
+project/.project
+

@@ -5,7 +5,7 @@ publishTo in ThisBuild <<= (version, name)  { (v: String, name: String) => {
 		// NOTE added [publish] because the repo name must be different from the one used in the resolvers+= line to download from the same repo
 		if (v.trim.endsWith("SNAPSHOT")) 
 			Some("Civitas Team1 SNAPSHOT MavenRepo [publish] " at baseRepoUrl + "s1-libs-snapshot-local;build.timestamp=" + new java.util.Date().getTime())
-		else
+		else {
  			println(
  	YELLOW + """
  	WARNING!
@@ -17,6 +17,7 @@ publishTo in ThisBuild <<= (version, name)  { (v: String, name: String) => {
  	RESET
  			)
 			None
+		}
 	}
 }
 

@@ -10,13 +10,9 @@ object ApplicationBuild extends Build {
 
 	val appDependencies = Seq(
 		"com.hibu" % "bragger-core" % appVersion exclude("com.wordnik", "swagger-core_2.9.1"),
-		"com.wordnik" %% "swagger-play2" % "1.2.1.hibu-SNAPSHOT"
+		"com.wordnik" %% "swagger-play2" % "1.2.1.hibu1-SNAPSHOT"
 	)
-	
-	lazy val swaggerPlay2 = ProjectRef(file("../../../swagger-core/modules/swagger-play2"), "swagger-play2")
-	
-	lazy val braggerCore = ProjectRef(file("../bragger-core"), "bragger-core")
-	
+
 	lazy val main = play.Project(appName, appVersion, appDependencies).settings(
 	
 		organization in ThisBuild := "com.hibu",
@@ -34,11 +30,14 @@ object ApplicationBuild extends Build {
 		EclipseKeys.withSource in ThisBuild := false
 	
 	).dependsOn(
-		swaggerPlay2,
-		braggerCore
+		//swaggerPlay2,
+		//braggerCore
 	).aggregate(
-		swaggerPlay2,
-		braggerCore
+		//swaggerPlay2,
+		//braggerCore
 	)
+
+	//lazy val braggerCore = ProjectRef(file("../bragger-core"), "bragger-core")
 	
+	//lazy val swaggerPlay2 = ProjectRef(file("../../../swagger-core/modules/swagger-play2"), "swagger-play2")
 }

@@ -13,7 +13,7 @@ import com.hibu.api.petservice.models.GetPetByIdRequestType;
 import com.hibu.api.petservice.models.Pet;
 import com.hibu.api.petservice.models.Tag;
 import com.hibu.api.petservice.models.UpdatePetRequestType;
-import com.hibu.bragger.apiclient.axis2.ApiClientFactory;
+import com.hibu.bragger.codegen.axis2.AxisClientFactory;
 
 public class PetStoreClientController extends Controller {
 
@@ -23,7 +23,7 @@ public class PetStoreClientController extends Controller {
 
 			// instantiate the api client auto generated from the wsdl.
 			// the need for the second parameter is due to a bug in jettison 
-			Petservice petService = ApiClientFactory.newClient(Petservice.class, PetserviceStub.class, Pet.class);
+			Petservice petService = new AxisClientFactory().getClient(Petservice.class, PetserviceStub.class, Pet.class);
 			
 			GetPetByIdRequestType request = new GetPetByIdRequestType();
 			request.setPetId("1");
@@ -49,7 +49,7 @@ public class PetStoreClientController extends Controller {
 			
 			// instantiate the api client auto generated from the wsdl.
 			// the need for the second parameter is due to a bug in jettison
-			Petservice petService = ApiClientFactory.newClient(Petservice.class, PetserviceStub.class, Pet.class);
+			Petservice petService = new AxisClientFactory().getClient(Petservice.class, PetserviceStub.class, Pet.class);
 			
 			AddPetRequestType request = new AddPetRequestType();
 			
@@ -103,7 +103,7 @@ public class PetStoreClientController extends Controller {
 			
 			// instantiate the api client auto generated from the wsdl.
 			// the need for the second parameter is due to a bug in jettison
-			Petservice petService = ApiClientFactory.newClient(Petservice.class, PetserviceStub.class, Pet.class);
+			Petservice petService = new AxisClientFactory().getClient(Petservice.class, PetserviceStub.class, Pet.class);
 			
 			UpdatePetRequestType request = new UpdatePetRequestType();
 			

@@ -1,0 +1,14 @@
+hibu.sbt
+target/
+project/target/
+project/project/target/
+fabfile.pyc
+publish_credentials
+.cache
+.classpath
+.gitignore
+.project
+bin/
+.target/
+.settings/
+

@@ -1,10 +1,11 @@
-package com.hibu.bragger.apiclient.axis2;
+package com.hibu.bragger.codegen.axis2;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.builder.Builder;
 import org.apache.axis2.client.Stub;
 import org.apache.axis2.transport.MessageFormatter;
 
+import com.hibu.bragger.codegen.ClientFactory;
 import com.hibu.bragger.utils.ReflectionUtils;
 
 /**
@@ -12,7 +13,7 @@ import com.hibu.bragger.utils.ReflectionUtils;
  * 
  * @author paolo
  */
-public class ApiClientFactory {
+public class AxisClientFactory implements ClientFactory {
 	
 	/**
 	 * This method instantiate and configure an api client using axis stub, based on the types provided. 
@@ -34,7 +35,7 @@ public class ApiClientFactory {
 	 * @throws InstantiationException
 	 */
 	@SuppressWarnings("unchecked")
-	public static <ITF, IMPL, RSC> ITF newClient(Class<ITF> serviceInterface, Class<IMPL> stubImplementation, Class<RSC> apiResourceClass, boolean wrappedResponse) throws AxisFault, InstantiationException {
+	public <ITF, IMPL, RSC> ITF newClient(Class<ITF> serviceInterface, Class<IMPL> stubImplementation, Class<RSC> apiResourceClass, boolean wrappedResponse) throws InstantiationException {
 		
 		try {
 			
@@ -58,7 +59,7 @@ public class ApiClientFactory {
 			
 			return (ITF) stub;
 
-		} catch (IllegalAccessException e) {
+		} catch (Exception e) {
 			throw new InstantiationException("caused by " + e.getClass().getName() + ": " +e.getMessage());
 		}
 	}
@@ -75,7 +76,7 @@ public class ApiClientFactory {
 	 * @throws AxisFault
 	 * @throws InstantiationException
 	 */
-	public static <ITF, IMPL, RSC> ITF newClient(Class<ITF> serviceInterface, Class<IMPL> stubImplementation, Class<RSC> apiResourceClass)  throws AxisFault, InstantiationException {
+	public <ITF, IMPL, RSC> ITF getClient(Class<ITF> serviceInterface, Class<IMPL> stubImplementation, Class<RSC> apiResourceClass)  throws InstantiationException {
 		return newClient(serviceInterface, stubImplementation, apiResourceClass, false);
 	}
 	
@@ -92,16 +93,16 @@ public class ApiClientFactory {
 	 * @throws InstantiationException 
 	 * @throws AxisFault 
 	 */
-	public static <ITF, RSC> ITF newClient(Class<ITF> apiInterface, Class<RSC> apiResourceClass) throws AxisFault, InstantiationException {
+	public <ITF, RSC> ITF newClient(Class<ITF> apiInterface, Class<RSC> apiResourceClass) throws InstantiationException {
 		// this is the expensive call
 		Class<Stub> stubImpl = findStubImplementationForInterface(apiInterface);
 		
-		return newClient(apiInterface, stubImpl, apiResourceClass);
+		return getClient(apiInterface, stubImpl, apiResourceClass);
 	}
 	
 	// ========================================================================
 	
-	private static <ITF> Class<Stub> findStubImplementationForInterface(Class<ITF> serviceInterface) {
+	private <ITF> Class<Stub> findStubImplementationForInterface(Class<ITF> serviceInterface) {
 		// TODO implement see http://stackoverflow.com/questions/347248/how-can-i-get-a-list-of-all-the-implementations-of-an-interface-programmatically
 		// use http://docs.oracle.com/javase/1.4.2/docs/guide/jar/jar.html#Service%20Provider 
 		// or https://code.google.com/p/reflections/

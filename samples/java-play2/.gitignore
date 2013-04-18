@@ -10,4 +10,4 @@ project/target/
 target/
 logs/
 
-build.sbt
+hibu.sbt

@@ -14,7 +14,7 @@ except ImportError:
 # template files to be rendered
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 env.custom_config_files = [
-    { "source": "fabric/build.sbt.template"          , "dest": "build.sbt"},
+    { "source": "fabric/hibu.sbt.template"           , "dest": "hibu.sbt"},
     { "source": "fabric/publish_credentials.template", "dest": "publish_credentials"}
 ]
 
