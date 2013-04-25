@@ -37,7 +37,7 @@ object ApplicationBuild extends Build {
 		EclipseKeys.withSource in ThisBuild := false
 		
 	).dependsOn(
-		braggerCore
+		//braggerCore
 	).aggregate(
 		//braggerCore
 	)

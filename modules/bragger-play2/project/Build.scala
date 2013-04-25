@@ -30,9 +30,9 @@ object ApplicationBuild extends Build {
 		EclipseKeys.withSource in ThisBuild := false
 	
 	).dependsOn(
-		swaggerPlay2 , braggerCore
+		//swaggerPlay2 , braggerCore
 	).aggregate(
-		swaggerPlay2 , braggerCore
+		//swaggerPlay2 , braggerCore
 	)
 
 	lazy val braggerCore = ProjectRef(file("../bragger-core"), "bragger-core")

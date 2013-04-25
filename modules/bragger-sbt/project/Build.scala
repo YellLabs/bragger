@@ -12,15 +12,13 @@ object ApplicationBuild extends Build {
 		//"org.slf4j" % "slf4j-log4j12" % "1.7.5" // print logs io the sbt console (TODO configure appenders)
 	)
 	
-	lazy val braggerCore = ProjectRef(file("../bragger-core"), "bragger-core")
-	
 	lazy val root = Project(
 		id = appName, 
 		base = file("."),
 		settings = Project.defaultSettings ++ Seq(
 			
-		    sbtPlugin := true,
-		    
+			sbtPlugin := true,
+			
 			libraryDependencies ++= appDependencies,
 			
 			organization in ThisBuild := "com.hibu",
@@ -45,7 +43,9 @@ object ApplicationBuild extends Build {
 			EclipseKeys.withSource in ThisBuild := false
 		)
 	).dependsOn(
-	    //braggerCore
+		//braggerCore
 	)
+	
+	lazy val braggerCore = ProjectRef(file("../bragger-core"), "bragger-core")
 	
 }
