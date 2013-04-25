@@ -11,7 +11,7 @@ package com.hibu.bragger.codegen;
  */
 public interface ClientFactory {
 
-	public <ITF, IMPL, RSC> ITF newClient(Class<ITF> serviceInterface, Class<IMPL> stubImplementation, Class<RSC> apiResourceClass, boolean wrappedResponse) throws InstantiationException;
+	public <ITF, IMPL, RSC> ITF getClient(Class<ITF> serviceInterface, Class<IMPL> stubImplementation, Class<RSC> apiResourceClass, boolean wrappedResponse) throws InstantiationException;
 
 	public <ITF, IMPL, RSC> ITF getClient(Class<ITF> serviceInterface, Class<IMPL> stubImplementation, Class<RSC> apiResourceClass)  throws InstantiationException;
 	

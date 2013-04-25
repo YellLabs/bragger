@@ -9,8 +9,10 @@ import com.hibu.apis.petstore.clients.user.Userservice;
 import com.hibu.apis.petstore.clients.user.UserserviceStub;
 import com.hibu.apis.petstore.models.AddPetRequestType;
 import com.hibu.apis.petstore.models.Category;
+import com.hibu.apis.petstore.models.FindPetsByStatusRequestType;
 import com.hibu.apis.petstore.models.GetPetByIdRequestType;
 import com.hibu.apis.petstore.models.Pet;
+import com.hibu.apis.petstore.models.PetList;
 import com.hibu.apis.petstore.models.Tag;
 import com.hibu.apis.petstore.models.UpdatePetRequestType;
 import com.hibu.apis.petstore.models.UpdateUserRequestType;
@@ -117,6 +119,23 @@ public class PetStoreClientController extends Controller {
 			e.printStackTrace();
 			throw e;
 		}
+	}
+	
+	public static Result findPetsByStatus() throws Exception {
+		
+		String statusParam = "available";
+		
+		// instantiate the stub
+		Petservice petservice = new AxisClientFactory().getClient(Petservice.class, PetserviceStub.class, Pet.class);
+		
+		// prepare request
+		FindPetsByStatusRequestType request = new FindPetsByStatusRequestType();
+		request.setStatus(statusParam);
+		
+		// execute call and get response
+		PetList response = petservice.findPetsByStatus(request);
+		
+		return ok("found " + response.getPet().size() + " pets by status = [" + statusParam + "]");
 	}
 	
 	// ========================================================================

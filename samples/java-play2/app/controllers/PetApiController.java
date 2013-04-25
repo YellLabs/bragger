@@ -1,6 +1,7 @@
 package controllers;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
@@ -26,11 +27,7 @@ public class PetApiController extends BaseApiController {
 
 
 
-	@ApiOperation(
-		value = "Find pet by ID", 
-		notes = "Returns a pet when ID < 10. ID > 10 or nonintegers will simulate API error conditions", 
-		responseClass = "models.Pet"
-	)
+	@ApiOperation(value = "Find pet by ID", responseClass = "models.Pet", notes = "Returns a pet when ID < 10. ID > 10 or nonintegers will simulate API error conditions")
 	@ApiErrors({
 		@ApiError(code=400, reason="Invalid ID supplied"),
 		@ApiError(code=404, reason="Pet not found")
@@ -89,25 +86,18 @@ public class PetApiController extends BaseApiController {
 
 
 	
-	@ApiOperation(
-		value="Finds Pets by status", 
-		notes="Multiple status values can be provided with comma separated strings", 
-		responseClass = "models.Pet", 
-		multiValueResponse = true
-	)
+	@ApiOperation(value="Finds Pets by status", responseClass="models.Pet", multiValueResponse=true, notes="Multiple status values can be provided with comma separated strings")
 	@ApiErrors({@ApiError(code=400, reason="Invalid status value")})
-	public static Result findPetsByStatus(@ApiParam(value = "Status values that need to be considered for filter", required = true, defaultValue = "available", allowableValues="available,pending,sold", allowMultiple=true) @QueryParam("status") String status) {
-		Logger.info(PetApiController.class.getSimpleName()+ ": findPetByStatus - start");
-		return JsonResponse(PetData.findPetByStatus(status));
+	public static Result findPetsByStatus(@ApiParam(value="Status values that need to be considered for filter", required=true, defaultValue="available", allowableValues="available,pending,sold", allowMultiple=true) @QueryParam("status") String status) {
+		Logger.info(PetApiController.class.getSimpleName() + ": findPetByStatus - start");
+		List<Pet> pets = PetData.findPetByStatus(status);
+		Logger.info(PetApiController.class.getSimpleName() + ": found " + pets.size() + " pets");
+		return JsonResponse(pets);
 	}
 
 
 	
-	@ApiOperation(
-		value = "Finds Pets by tags", 
-		notes = "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.", 
-		responseClass = "models.Pet", 
-		multiValueResponse = true
+	@ApiOperation(value = "Finds Pets by tags", responseClass = "models.Pet", multiValueResponse = true, notes = "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing."
 	)
 	@ApiErrors({
 		@ApiError(code=400, reason="Invalid tag value")

@@ -8,6 +8,7 @@ GET /                               com.hibu.api.petstore.client.controllers.App
 # resource PET
 GET /getPetById                     com.hibu.api.petstore.client.controllers.PetStoreClientController.getPetById()
 GET /addPet                         com.hibu.api.petstore.client.controllers.PetStoreClientController.addPet()
+GET /findPetsByStatus               com.hibu.api.petstore.client.controllers.PetStoreClientController.findPetsByStatus()
 
 # resource USER
 GET /updateUser                     com.hibu.api.petstore.client.controllers.PetStoreClientController.updateUser()

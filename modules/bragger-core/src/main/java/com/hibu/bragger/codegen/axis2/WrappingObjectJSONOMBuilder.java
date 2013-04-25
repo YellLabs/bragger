@@ -35,15 +35,23 @@ import org.apache.axis2.transport.http.util.URIEncoderDecoder;
 public class WrappingObjectJSONOMBuilder extends AbstractJSONOMBuilder {
 
 	private boolean jsonResponseWrappedInAContainer;
+	private String resourceName;
 	
 	public WrappingObjectJSONOMBuilder() {
 		super();
 		this.jsonResponseWrappedInAContainer = false;
+		this.resourceName = "Object";
 	}
 	
 	public WrappingObjectJSONOMBuilder(boolean wrappedResponse) {
 		super();
 		this.jsonResponseWrappedInAContainer = wrappedResponse;
+	}
+
+	public WrappingObjectJSONOMBuilder(boolean wrappedResponse, String resourceName) {
+		super();
+		this.jsonResponseWrappedInAContainer = wrappedResponse;
+		this.resourceName = resourceName;
 	}
 	
     @Override
@@ -143,9 +151,7 @@ public class WrappingObjectJSONOMBuilder extends AbstractJSONOMBuilder {
 					}
 				}
 			} else {
-				// having a wrapping object with a different name from the one expected
-				// doesn't prevent jettison from unmarshalling its content properly
-				localName = "AnyContainer";
+				localName = resourceName;
 			}
 		} catch (IOException e) {
 			throw AxisFault.makeFault(e);

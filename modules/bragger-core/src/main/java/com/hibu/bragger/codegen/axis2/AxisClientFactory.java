@@ -29,20 +29,21 @@ public class AxisClientFactory implements ClientFactory {
 	 * <ul>
 	 * <li>- the wrapped response would be <code>{ "ResourceContainer" : { "id" :"1, "name" : "myPetName" } }</code></li>
 	 * <li>- the unwrapped response would be <code>{ "id" : "1, "name" : "myPetName" }</code></li>
-	 * </ul>
+	 * </ul></br> 
+	 * defaults to false
 	 * @return new client for the api
 	 * @throws AxisFault
 	 * @throws InstantiationException
 	 */
 	@SuppressWarnings("unchecked")
-	public <ITF, IMPL, RSC> ITF newClient(Class<ITF> serviceInterface, Class<IMPL> stubImplementation, Class<RSC> apiResourceClass, boolean wrappedResponse) throws InstantiationException {
+	public <ITF, IMPL, RSC> ITF getClient(Class<ITF> serviceInterface, Class<IMPL> stubImplementation, Class<RSC> apiResourceClass, boolean wrappedResponse) throws InstantiationException {
 		
 		try {
 			
 			Stub stub = (Stub) stubImplementation.newInstance();
 			
 			// using a custom builder to unmarshal responses from the api
-			Builder jsonUnmarshaller = new WrappingObjectJSONOMBuilder(wrappedResponse);
+			Builder jsonUnmarshaller = new WrappingObjectJSONOMBuilder(wrappedResponse, apiResourceClass.getSimpleName());
 			
 			// using a custom jsonformatter to marshal objects to send them to the api on the wire
 			MessageFormatter jsonMarshaller = null;
@@ -67,7 +68,7 @@ public class AxisClientFactory implements ClientFactory {
 	/**
 	 * this method instantiate and configure an api client using axis stub, based on the types provided</br>
 	 * </p>
-	 * the created client will support only non wrapped responses, for an explanation of wrapped response see {@link #newClient(Class, Class, Class, boolean) newClient}</br>
+	 * the created client will support only non wrapped responses, for an explanation of wrapped response see {@link #getClient(Class, Class, Class, boolean) newClient}</br>
 	 * 
 	 * @param serviceInterface
 	 * @param stubImplementation
@@ -77,7 +78,7 @@ public class AxisClientFactory implements ClientFactory {
 	 * @throws InstantiationException
 	 */
 	public <ITF, IMPL, RSC> ITF getClient(Class<ITF> serviceInterface, Class<IMPL> stubImplementation, Class<RSC> apiResourceClass)  throws InstantiationException {
-		return newClient(serviceInterface, stubImplementation, apiResourceClass, false);
+		return getClient(serviceInterface, stubImplementation, apiResourceClass, false);
 	}
 	
 	/**
@@ -85,19 +86,20 @@ public class AxisClientFactory implements ClientFactory {
 	 * it also finds dynamically an implementation of the service interface, that's why this method is expensive</br> 
 	 * so the object returned is meant to be kept on the client class and reused as much as possible</br>
 	 * </p>
-	 * the created client will support only non wrapped responses, for an explanation of wrapped response see {@link #newClient(Class, Class, Class, boolean) newClient}</br> 
+	 * the created client will support only non wrapped responses, for an explanation of wrapped response see {@link #getClient(Class, Class, Class, boolean) newClient}</br> 
 	 * 
-	 * @param apiInterface
+	 * @param serviceInterface
 	 * @param apiResource
 	 * @return an implementation of the interface provided at <code>apiInterface</code>
 	 * @throws InstantiationException 
 	 * @throws AxisFault 
 	 */
-	public <ITF, RSC> ITF newClient(Class<ITF> apiInterface, Class<RSC> apiResourceClass) throws InstantiationException {
-		// this is the expensive call
-		Class<Stub> stubImpl = findStubImplementationForInterface(apiInterface);
+	public <ITF, RSC> ITF getClient(Class<ITF> serviceInterface, Class<RSC> apiResourceClass) throws InstantiationException {
 		
-		return getClient(apiInterface, stubImpl, apiResourceClass);
+		// this is the expensive call
+		Class<Stub> stubImpl = findStubImplementationForInterface(serviceInterface);
+		
+		return getClient(serviceInterface, stubImpl, apiResourceClass);
 	}
 	
 	// ========================================================================
