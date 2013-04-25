@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class StoreData {
+
 	static List<Order> orders = new ArrayList<Order>();
 
 	static {
@@ -37,7 +38,7 @@ public class StoreData {
 		orders.add(createOrder(15, 3, 2, new Date(), "placed"));
 	}
 
-	public Order findOrderById(long orderId) {
+	public static Order findOrderById(long orderId) {
 		for (Order order : orders) {
 			if (order.getId() == orderId) {
 				return order;
@@ -46,7 +47,7 @@ public class StoreData {
 		return null;
 	}
 
-	public void placeOrder(Order order) {
+	public static void placeOrder(Order order) {
 		if (orders.size() > 0) {
 			for (int i = orders.size() - 1; i >= 0; i--) {
 				if (orders.get(i).getId() == order.getId()) {
@@ -57,7 +58,7 @@ public class StoreData {
 		orders.add(order);
 	}
 
-	public void deleteOrder(long orderId) {
+	public static void deleteOrder(long orderId) {
 		if (orders.size() > 0) {
 			for (int i = orders.size() - 1; i >= 0; i--) {
 				if (orders.get(i).getId() == orderId) {
@@ -77,4 +78,5 @@ public class StoreData {
 		order.setStatus(status);
 		return order;
 	}
+
 }

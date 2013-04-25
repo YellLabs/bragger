@@ -1,7 +1,6 @@
 package com.hibu.bragger.codegen;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * this interface has to be implemented by different client generators
@@ -24,6 +23,6 @@ import java.util.List;
  */
 public interface ClientGenerator {
 
-	public List<File> generate();
+	public Iterable<File> generate();
 	
 }

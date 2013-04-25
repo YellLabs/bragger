@@ -1,5 +1,7 @@
 package com.hibu.bragger.controllers;
 
+import play.Logger;
+import play.Play;
 import play.mvc.Controller;
 import play.mvc.Result;
 
@@ -14,7 +16,7 @@ import com.wordnik.swagger.core.Documentation;
  *
  */
 public class BraggerController extends Controller {
-	
+		
 	/**
 	 * generates the xml schemas for the app models
 	 * @return
@@ -25,7 +27,13 @@ public class BraggerController extends Controller {
 			
 			@SuppressWarnings("rawtypes")
 			Class[] modelClasses = SwaggerPlay2Helper.getApiModelClasses();
+			
+			Logger.info(me() + "generating xsd for models: " + models(modelClasses));
+			
 			String schemaAsString = ModelsXSDGenerator.getModelsXSD(modelClasses);
+			
+			Logger.info(me() + "xsd generated, returning...");
+			
 			return ok(schemaAsString).as("application/xml");
 			
 		} catch (IllegalArgumentException e) {
@@ -50,7 +58,10 @@ public class BraggerController extends Controller {
 			Documentation resourceDoc = SwaggerPlay2Helper.readApiDocs().get(resourceName);
 
 			String xsdUrl = com.hibu.bragger.controllers.routes.BraggerController.getXSD().url();
-			String wsdlAsString = WSDL20gen.generateWSDL20(resourceName, resourceDoc, SwaggerPlay2Helper.basicTypes, xsdUrl);
+			
+			String appName = Play.application().configuration().getString("application.name");
+			
+			String wsdlAsString = WSDL20gen.generateWSDL20(appName, resourceName, resourceDoc, xsdUrl);
 
 			return ok(wsdlAsString).as("text/xml");
 		
@@ -63,5 +74,20 @@ public class BraggerController extends Controller {
 			return internalServerError(e.getMessage());
 		}
 	}
+	
+	private static String models(Class[] modelClasses) {
+		String models = "";
 		
+		if (modelClasses!=null) {				
+			for (Class c: modelClasses)
+				models = c.getName() + ", " + models;
+		}
+		if (models.endsWith(", ")) 
+			models = models.substring(0, models.length()-2);
+		
+		return models;
+	}
+	
+	private static String me() { return "[" + BraggerController.class.getSimpleName() + "] "; }
+	
 }

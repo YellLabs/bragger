@@ -8,6 +8,6 @@ wsdl2java.sh \
    --databinding-method jaxbri \
    --package com.hibu.api.petservice \
    --serverside-interface --sync --unpack-classes --test-case \
-   --over-ride -uri http://localhost:9000/api-docs.wsdl/pet
+   --over-ride -uri http://localhost:9000/docs/api-docs.wsdl/user
 
 

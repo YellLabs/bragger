@@ -3,11 +3,14 @@
 # ~~~~
 
 # Home page
-GET     /                           com.hibu.api.petstore.client.controllers.Application.index()
+GET /                               com.hibu.api.petstore.client.controllers.Application.index()
 
+# resource PET
 GET /getPetById                     com.hibu.api.petstore.client.controllers.PetStoreClientController.getPetById()
-
 GET /addPet                         com.hibu.api.petstore.client.controllers.PetStoreClientController.addPet()
+
+# resource USER
+GET /updateUser                     com.hibu.api.petstore.client.controllers.PetStoreClientController.updateUser()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

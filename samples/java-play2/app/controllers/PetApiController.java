@@ -23,7 +23,8 @@ import com.wordnik.swagger.annotations.ApiParamsImplicit;
 
 @Api(value = "/pet", listingPath = "/docs/api-docs.{format}/pet", description = "Operations about pets")
 public class PetApiController extends BaseApiController {
-	static PetData petData = new PetData();
+
+
 
 	@ApiOperation(
 		value = "Find pet by ID", 
@@ -36,26 +37,24 @@ public class PetApiController extends BaseApiController {
 	})
 	public static Result getPetById(@ApiParam(value="ID of pet that needs to be fetched", allowableValues="range[1,5]", required=true) @PathParam("petId") String petId) {
 		Logger.info(PetApiController.class.getSimpleName()+ ": getPetById: "+ petId+ " - start");
-
-		return JsonResponse(petData.getPetbyId(Long.parseLong(petId)));
+		return JsonResponse(PetData.getPetbyId(Long.parseLong(petId)));
 	}
-	
-	
+
+
 	
 	@ApiOperation(value="Add a new pet to the store")
 	@ApiErrors({
 		@ApiError(code=405, reason="Invalid input")
 	})
 	@ApiParamsImplicit({
-		@ApiParamImplicit(value="Pet object that needs to be added to the store", required=true, dataType="Pet", paramType="body")
+		@ApiParamImplicit(value="Pet object that needs to be added to the store", required=true, dataType="models.Pet", paramType="body")
 	})
 	public static Result addPet() {
 		Logger.info(PetApiController.class.getSimpleName()+ ": addPet - start");
 		JsonNode json = request().body().asJson();
-		JsonNode bodyNode = json.get("body");
 		try {
-			Pet pet = (Pet) BaseApiController.mapper.readValue(bodyNode.toString(), Pet.class);
-			petData.addPet(pet);
+			Pet pet = (Pet) BaseApiController.mapper.readValue(json.toString(), Pet.class);
+			PetData.addPet(pet);
 			Logger.info(PetApiController.class.getSimpleName()+ " added Pet with id = " + pet.getId());
 			return JsonResponse(pet);
 			
@@ -65,7 +64,7 @@ public class PetApiController extends BaseApiController {
 		}
 	}
 
-	
+
 	
 	@ApiOperation(value="Update an existing pet")
 	@ApiErrors({ 
@@ -74,21 +73,21 @@ public class PetApiController extends BaseApiController {
 		@ApiError(code=405, reason="Validation exception") 
 	})
 	@ApiParamsImplicit({ 
-		@ApiParamImplicit(value="Pet object that needs to be updated in the store", required=true, dataType="Pet", paramType="body") 
+		@ApiParamImplicit(value="Pet object that needs to be updated in the store", required=true, dataType="models.Pet", paramType="body") 
 	})
 	public static Result updatePet() {
 		Logger.info(PetApiController.class.getSimpleName()+ ": updatePet - start");
 		Object o = request().body().asJson();
 		try {
 			Pet pet = (Pet) BaseApiController.mapper.readValue(o.toString(), Pet.class);
-			petData.addPet(pet);
+			PetData.addPet(pet);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return JsonResponse("SUCCESS");
 	}
 
-	
+
 	
 	@ApiOperation(
 		value="Finds Pets by status", 
@@ -99,10 +98,10 @@ public class PetApiController extends BaseApiController {
 	@ApiErrors({@ApiError(code=400, reason="Invalid status value")})
 	public static Result findPetsByStatus(@ApiParam(value = "Status values that need to be considered for filter", required = true, defaultValue = "available", allowableValues="available,pending,sold", allowMultiple=true) @QueryParam("status") String status) {
 		Logger.info(PetApiController.class.getSimpleName()+ ": findPetByStatus - start");
-		return JsonResponse(petData.findPetByStatus(status));
+		return JsonResponse(PetData.findPetByStatus(status));
 	}
 
-	
+
 	
 	@ApiOperation(
 		value = "Finds Pets by tags", 
@@ -115,7 +114,7 @@ public class PetApiController extends BaseApiController {
 	})
 	public static Result findPetsByTags(@ApiParam(value = "Tags to filter by", required = true, allowMultiple = true) @QueryParam("tags") String tags) {
 		Logger.info(PetApiController.class.getSimpleName()+ ": findPetByTag - start");
-		return JsonResponse(petData.findPetByTags(tags));
+		return JsonResponse(PetData.findPetByTags(tags));
 	}
-	
+
 }

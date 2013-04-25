@@ -8,7 +8,8 @@ object ApplicationBuild extends Build {
 	val appVersion = "1.3.0-SNAPSHOT"
 
 	val appDependencies = Seq(
-		"com.hibu" % "bragger-core" % appVersion
+		"com.hibu" % "bragger-core" % appVersion//, //excludeAll(ExclusionRule(organization = "javax.servlet", name = "servlet-api")),
+		//"org.slf4j" % "slf4j-log4j12" % "1.7.5" // print logs io the sbt console (TODO configure appenders)
 	)
 	
 	lazy val braggerCore = ProjectRef(file("../bragger-core"), "bragger-core")
@@ -26,7 +27,7 @@ object ApplicationBuild extends Build {
 			version in ThisBuild := appVersion,
 			
 			publishArtifact in (Compile, packageDoc) := false,
-			publishArtifact in (Compile, packageSrc) := true,
+			publishArtifact in (Compile, packageSrc) := false,
 			publishArtifact in (Test, packageSrc) := false,
 			publishMavenStyle in ThisBuild := false,
 			

@@ -25,9 +25,9 @@ object ApplicationBuild extends Build {
 		EclipseKeys.withSource in ThisBuild := false
 		
 	).dependsOn(
-	    //play2Bragger
+	    play2Bragger
 	).aggregate(
-	    //play2Bragger
+	    play2Bragger
 	)
 	
 	lazy val play2Bragger = ProjectRef(file("../../modules/bragger-play2"), "bragger-play2")

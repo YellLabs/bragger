@@ -1,13 +1,11 @@
 // Comment to get more information during initialization
-logLevel := Level.Warn
+logLevel := Level.Info
 
 // The Typesafe repository
 resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
 
 // Use the Play sbt plugin for Play projects
 addSbtPlugin("play" % "sbt-plugin" % "2.1.0")
-
-
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 resolvers ++= Seq(
@@ -17,7 +15,5 @@ resolvers ++= Seq(
 	"petalslink" at "http://maven.petalslink.com/public"
 )
 
-libraryDependencies += "org.slf4j" % "slf4j-log4j12" % "1.7.5"
-		
 addSbtPlugin("com.hibu" % "bragger-sbt" % "1.3.0-SNAPSHOT")
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

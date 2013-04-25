@@ -16,17 +16,25 @@ object ApplicationBuild extends Build {
 
 	            // ====== commons ======
         		"commons-io" % "commons-io" % "2.4",
-        		"javax.mail" % "mail" % "1.4",
+        		//"javax.mail" % "mail" % "1.4",
         		"org.slf4j" % "slf4j-api" % "1.7.2",
         		
 				// ====== dependencies to use the client stubs auto generated form wsdl ======
-        		"axis" % "axis-wsdl4j" % "1.5.1",
-        		"org.apache.axis2" % "axis2-adb" % "1.6.2",
-        		"org.apache.axis2" % "axis2-jaxbri" % "1.6.2",
-        		"org.apache.axis2" % "axis2-codegen" % "1.6.2" ,
+        		"axis" % "axis-wsdl4j" % "1.5.1" excludeAll(
+				    ExclusionRule(organization = "javax.servlet", name = "servlet-api")
+				),
+        		"org.apache.axis2" % "axis2-adb" % "1.6.2" excludeAll(
+				    ExclusionRule(organization = "javax.servlet", name = "servlet-api")
+				),
+        		"org.apache.axis2" % "axis2-jaxbri" % "1.6.2" excludeAll(
+				    ExclusionRule(organization = "javax.servlet", name = "servlet-api")
+				),
+        		"org.apache.axis2" % "axis2-codegen" % "1.6.2"excludeAll(
+				    ExclusionRule(organization = "javax.servlet", name = "servlet-api")
+				),
         		"org.apache.axis2" % "axis2-java2wsdl" % "1.6.2" excludeAll(
-        			ExclusionRule(organization = "org.apache.geronimo.specs"),
-        			ExclusionRule(organization = "javax.servlet")
+        			ExclusionRule(organization = "org.apache.geronimo.specs", name= "geronimo-javamail_1.4_spec"),
+        			ExclusionRule(organization = "javax.servlet", name = "servlet-api")
         		),
         		"org.apache.axis2" % "axis2-json" % "1.6.2" exclude("org.codehaus.jettison", "jettison"),
         		// using patched jettison: 
@@ -37,11 +45,15 @@ object ApplicationBuild extends Build {
         		"backport-util-concurrent" % "backport-util-concurrent" % "3.1",
         		
 				// ====== easy-wsdl libs ======
-				"org.ow2.easywsdl" % "easywsdl-tool-java2wsdl" % "2.3",
+				"org.ow2.easywsdl" % "easywsdl-tool-java2wsdl" % "2.3" excludeAll(
+				    ExclusionRule(organization = "javax.servlet", name = "servlet-api")
+				),
 				"com.ebmwebsourcing.easycommons" % "easycommons.xml" % "1.1", // even though it's required for easywsdl-wsdl to function, it's not part of its dependency tree
 				
 				// ====== swagger ======
-				"com.wordnik" % "swagger-core_2.9.1" % "1.2.2-SNAPSHOT"
+				"com.wordnik" % "swagger-core_2.9.1" % "1.2.2-SNAPSHOT" excludeAll(
+				    ExclusionRule(organization = "javax.servlet", name = "servlet-api")
+				)
 			),
 			
 			organization in ThisBuild := "com.hibu",
@@ -50,8 +62,9 @@ object ApplicationBuild extends Build {
 			publishArtifact in (Test, packageSrc) := false,
 			publishMavenStyle in ThisBuild := true,
 			
-			autoScalaLibrary := false,			
-			crossPaths := false,			
+			scalaVersion := "2.10.0",
+			autoScalaLibrary := false,
+			crossPaths := false,		
 			testOptions += Tests.Argument(TestFrameworks.JUnit, "-v"),
 			
 			// bragger repo

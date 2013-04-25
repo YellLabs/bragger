@@ -2,16 +2,15 @@ package com.hibu.bragger.codegen.axis2;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
 
 import org.apache.axis2.util.CommandLineOptionConstants;
 import org.apache.axis2.util.CommandLineOptionParser;
 import org.apache.axis2.wsdl.codegen.CodeGenerationEngine;
 import org.apache.axis2.wsdl.codegen.CodeGenerationException;
-import org.apache.axis2.wsdl.i18n.CodegenMessages;
 import org.apache.axis2.wsdl.util.WSDL2JavaOptionsValidator;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 
 import com.hibu.bragger.codegen.ClientGenerator;
 
@@ -27,9 +26,9 @@ public class AxisClientCodeGenerator implements ClientGenerator {
 	
 	private String wsdlUrl;
 	private String targetPackage;
-	private String targetFolder;
+	private File targetFolder;
 	
-	public AxisClientCodeGenerator(String wsdlUrl, String targetPackage, String targetFolder) {
+	public AxisClientCodeGenerator(String wsdlUrl, String targetPackage, File targetFolder) {
 		super();
 		this.wsdlUrl = wsdlUrl;
 		this.targetPackage = targetPackage;
@@ -37,7 +36,7 @@ public class AxisClientCodeGenerator implements ClientGenerator {
 	}
 
 	@Override
-	public List<File> generate() {
+	public Collection<File> generate() {
 		
 		try {
 			
@@ -45,22 +44,23 @@ public class AxisClientCodeGenerator implements ClientGenerator {
 			String[] args = toCommandLineOptions(wsdlUrl, targetPackage, targetFolder);
 			
 			CommandLineOptionParser commandLineOptionParser = new CommandLineOptionParser(args);
-			
-			CodeGenerationEngine engine = new CodeGenerationEngine(commandLineOptionParser);
-			
-	        if (isOptionsValid(commandLineOptionParser)){
-	            
-	        	// trigger the generation using axis generation engine
+	        	
+			if (isOptionsValid(commandLineOptionParser)) {
+	        	
+	        	CodeGenerationEngine engine = new CodeGenerationEngine(commandLineOptionParser);
+	        	
+	        	// trigger the generation using axis wsdl2java
 	        	engine.generate();
-	            
-	            // code is now generated 
-	            // i can return the list of generated source files 
-	            // so that they can be added to the build
-	            return getGeneratedSourceFiles(targetFolder);
+
+	        	// code is now generated
+	        	// now i need to fetch all generated source files and return them
+	        	// (so that they can be added to the build in sbt)
+	        	Collection<File> files = FileUtils.listFiles(targetFolder, FileFilterUtils.fileFileFilter(), FileFilterUtils.directoryFileFilter());
+				
+	        	return files;
 	            
 	        } else {
-	        	// TODO find a way to propagate this messages to sbt/maven-plugin so that they can be printed
-	            printUsage();
+	        	// TODO log warning to the building console
 	            return new ArrayList<File>();
 	        }
 			
@@ -93,7 +93,7 @@ public class AxisClientCodeGenerator implements ClientGenerator {
 	 * @param targetFolder
 	 * @return
 	 */
-	private String[] toCommandLineOptions(String wsdlUrl, String targetPackage, String targetFolder) {
+	private String[] toCommandLineOptions(String wsdlUrl, String targetPackage, File targetFolder) {
 		// TODO use CommandLineOptionConstants.WSDL2JavaConstants here
 		return new String[]{
 				"--wsdl-version", "2.0", 
@@ -102,46 +102,28 @@ public class AxisClientCodeGenerator implements ClientGenerator {
 				"--serverside-interface", 
 				"--sync", 
 				"--unpack-classes", 
-				"--test-case",
+				//"--test-case",
 				"--over-ride", 
-				"--output", targetFolder, 
+				"--noBuildXML",
+				
+				//TODO think about multiple clients scenario! does a different source folder for each api make sense? maybe named after a serviceName param
+				// mmmm maybe not... maybe different clients go to the same folder with different packages otherwise
+				// there's no way of adding each folder to the sourceManaged. i mean, how can you add to the sourceManaged settings inside the bragger-generate task code??
+				"--output", targetFolder.getAbsolutePath(), //"target/scala-2.10/src_managed/bragger", 
+				
+				"--resource-folder", "resources",
+				"--source-folder", "src",
+				
 				"-uri", wsdlUrl
 		};
 	}
-
-	/**
-	 * fetch all source files generated from the engine
-	 * this could be made public if we wanted to maintain state
-	 * and let the client code access the files even after the code generation
-	 * 
-	 * TODO implement
-	 * 
-	 * @param targetFolder
-	 * @return
-	 */
-	private List<File> getGeneratedSourceFiles(String targetFolder) {
-		// TODO implement
-		return new ArrayList<File>();
-	}
 	
-    private static void printUsage() {
-
-        System.out.println(CodegenMessages.getMessage("wsdl2code.arg"));
-        System.out.println(CodegenMessages.getMessage("wsdl2code.arg1"));
-        for (int i = 2; i <= 49; i++) {
-            System.out.println("  " + CodegenMessages.getMessage("wsdl2code.arg" + i));
-        }
-    }
-
     private static boolean isOptionsValid(CommandLineOptionParser parser) {
         boolean isValid = true;
-        if (parser.getInvalidOptions(new WSDL2JavaOptionsValidator()).size() > 0){
+        if (parser.getInvalidOptions(new WSDL2JavaOptionsValidator()).size() > 0)
             isValid = false;
-        }
-        if (null == parser.getAllOptions().get(
-                        CommandLineOptionConstants.WSDL2JavaConstants.WSDL_LOCATION_URI_OPTION)){
+        if (null == parser.getAllOptions().get(CommandLineOptionConstants.WSDL2JavaConstants.WSDL_LOCATION_URI_OPTION))
             isValid = false;
-        }
         return isValid;
     }
   

@@ -1,13 +1,11 @@
 package com.hibu.bragger.swagger;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
 
 import play.Logger;
 import play.Play;
@@ -24,12 +22,6 @@ import com.wordnik.swagger.core.util.JsonUtil;
 
 public class SwaggerPlay2Helper {
 	
-	public static Set<String> basicTypes = new HashSet<String>();
-	
-	static {
-		basicTypes.addAll(Arrays.asList(new String[]{"string", "String", "number", "int", "boolean", "object", "Array", "void", "null", "any"}));
-	}
-		
 	/**
 	 * 
 	 * @return
@@ -43,19 +35,20 @@ public class SwaggerPlay2Helper {
 		Map<String, Documentation> docsMap = new HashMap<String, Documentation>();
 		
 		Map<String, Class> controllerClasses = getApiControllers();
-
+		
 		for (String resourcePath: ApiHelpInventory.getResourceNames()) {
 			
 			String resourceName = extractResourceName(resourcePath);
 			if (resourceName!=null) {
-				                        
+				
 				String swaggerMainUrl = com.wordnik.swagger.play.controllers.routes.ApiHelpController.getResource(resourceName).url();
 				
 				String json = ApiHelpInventory.getPathHelpJson(swaggerMainUrl, null);
 				if (json!=null && !json.isEmpty() && controllerClasses.get(resourceName)!=null) {
 					
+					
 					Documentation simpleDoc = JsonUtil.getJsonMapper().readValue(json, Documentation.class);
-										
+					
 					if (controllerClasses.get(resourceName)!=null) {
 						Documentation typedResourceDoc = PlayApiReader.read(controllerClasses.get(resourceName), 
 								simpleDoc.apiVersion(), simpleDoc.apiVersion(), simpleDoc.basePath(), simpleDoc.resourcePath());
@@ -64,7 +57,7 @@ public class SwaggerPlay2Helper {
 				}
 			}
 		}
-
+		
 		return docsMap;
 	}
 	
@@ -79,35 +72,41 @@ public class SwaggerPlay2Helper {
 		// used a set initially to remove duplicates 
 		Set<Class> modelClassesSet = new HashSet<Class>();
 		
-		for (Class controllerClass : getApiControllers().values()) {
+		Collection<Class> controllersClasses = getApiControllers().values();
+		for (Class controllerClass : controllersClasses) {
 			
 			// this is used to get the internalType of the responseClasses
 			Documentation typedResourceDoc = PlayApiReader.read(controllerClass, null, null, null, null);
-
-			for (DocumentationEndPoint api : typedResourceDoc.getApis()) {
-				for (DocumentationOperation operation : api.getOperations()) {
+			
+			if (typedResourceDoc.getApis()!=null) {
+				for (DocumentationEndPoint api : typedResourceDoc.getApis()) {
 					
-					try {
-						
-						// operation response type
-						if (!SwaggerPlay2Helper.basicTypes.contains(operation.getResponseClass())) {
-							String operationResponseClassName = operation.getResponseTypeInternal();
-							modelClassesSet.add(Play.application().classloader().loadClass(operationResponseClassName));
-						}
-						
-						// operation non primitive parameters
-						if (operation.getParameters() != null) {
-							for (DocumentationParameter param : operation.getParameters()) {
-								if (StringUtils.isNotBlank(param.getValueTypeInternal()))
-									if (!SwaggerPlay2Helper.basicTypes.contains(operation.getResponseClass())) {
-										String paramInternalType = param.getParamType();
-										modelClassesSet.add(Class.forName(paramInternalType));
+					if (api.getOperations()!=null) {
+						for (DocumentationOperation operation : api.getOperations()) {
+							
+							try {
+								
+								// operation response type
+								String responseModel = SwaggerHelper.getModelFromValueType(operation.getResponseClass());
+								if (responseModel!=null) {
+									String operationResponseClassName = operation.getResponseTypeInternal();
+									modelClassesSet.add(Play.application().classloader().loadClass(operationResponseClassName));
+								}
+								
+								// operation non primitive parameters
+								if (operation.getParameters() != null) {
+									for (DocumentationParameter param : operation.getParameters()) {
+										String paramModel = SwaggerHelper.getModelFromValueType(param.getValueTypeInternal());
+										if (paramModel!=null) {
+											modelClassesSet.add(Play.application().classloader().loadClass(paramModel));
+										}
 									}
+								}
+								
+							} catch (ClassNotFoundException e) {
+								Logger.error("model class not found: " + e.getMessage());
 							}
 						}
-						
-					} catch (ClassNotFoundException e) {
-						Logger.error("model class not found: " + e.getMessage());
 					}
 				}
 			}
@@ -116,7 +115,8 @@ public class SwaggerPlay2Helper {
 		// convert set modelClasses to an array of Class
 		return modelClassesSet.toArray(new Class[modelClassesSet.size()]);
 	}
-	
+
+
 	/**
 	 * @return map with entries like: "Pet" -> PetApiController.class
 	 */
@@ -138,7 +138,7 @@ public class SwaggerPlay2Helper {
 	private static String extractResourceName(String resourcePath) {
 		String resourceName = null;
 		int endIndex = resourcePath.lastIndexOf("/");
-		if (endIndex!=-1) {			
+		if (endIndex!=-1) {
 			resourceName = resourcePath.substring(endIndex+1);
 		} 
 		return resourceName;

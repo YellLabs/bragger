@@ -1,22 +1,24 @@
 package com.hibu.api.petstore.client.controllers;
 
-import org.apache.axis2.AxisFault;
-
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import com.hibu.api.petservice.Petservice;
-import com.hibu.api.petservice.PetserviceStub;
-import com.hibu.api.petservice.models.AddPetRequestType;
-import com.hibu.api.petservice.models.Category;
-import com.hibu.api.petservice.models.GetPetByIdRequestType;
-import com.hibu.api.petservice.models.Pet;
-import com.hibu.api.petservice.models.Tag;
-import com.hibu.api.petservice.models.UpdatePetRequestType;
+import com.hibu.apis.petstore.clients.pet.Petservice;
+import com.hibu.apis.petstore.clients.pet.PetserviceStub;
+import com.hibu.apis.petstore.clients.user.Userservice;
+import com.hibu.apis.petstore.clients.user.UserserviceStub;
+import com.hibu.apis.petstore.models.AddPetRequestType;
+import com.hibu.apis.petstore.models.Category;
+import com.hibu.apis.petstore.models.GetPetByIdRequestType;
+import com.hibu.apis.petstore.models.Pet;
+import com.hibu.apis.petstore.models.Tag;
+import com.hibu.apis.petstore.models.UpdatePetRequestType;
+import com.hibu.apis.petstore.models.UpdateUserRequestType;
+import com.hibu.apis.petstore.models.User;
 import com.hibu.bragger.codegen.axis2.AxisClientFactory;
 
 public class PetStoreClientController extends Controller {
-
+	
 	public static Result getPetById() throws Exception {
 		
 		try {
@@ -31,11 +33,7 @@ public class PetStoreClientController extends Controller {
 			Pet pet = petService.getPetById(request);
 			System.out.println("returning Pet " + pet.getName());
 
-			return ok("found Pet " + pet.getName());
-			
-		} catch (AxisFault e) {
-			e.printStackTrace();
-			throw e;
+			return ok("found Pet " + pet.getName()); //return null; 
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -82,9 +80,6 @@ public class PetStoreClientController extends Controller {
 			
 			return ok("added Pet");
 			
-		} catch (AxisFault e) {
-			e.printStackTrace();
-			throw e;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
@@ -117,15 +112,48 @@ public class PetStoreClientController extends Controller {
 			petService.updatePet(request);
 						
 			return ok("updated Pet");
-			
-		} catch (AxisFault e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
+		}
+	}
+	
+	// ========================================================================
+	
+	/**
+	 * 
+	 */
+	public static Result updateUser() throws Exception {
+		
+		try {
+			
+			// instantiate the api client auto generated from the wsdl.
+			// the need for the second parameter is due to a bug in jettison
+			Userservice petService = new AxisClientFactory().getClient(Userservice.class, UserserviceStub.class, User.class);
+			
+			UpdateUserRequestType request = new UpdateUserRequestType();
+			User inputUser = new User();
+			inputUser.setUsername("paolo");
+			inputUser.setEmail("paolo.gentili@hibu.com");
+			inputUser.setFirstName("paolo");
+			inputUser.setId(12345678);
+			inputUser.setLastName("gentili");
+			inputUser.setPassword("mypassword");
+			inputUser.setPhone("12345");
+			inputUser.setUserStatus(2);
+
+			request.setBody(inputUser);
+			request.setUsername("paolo");
+
+			petService.updateUser(request);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
 		
+		return ok("updated User");
 	}
 	
 }
