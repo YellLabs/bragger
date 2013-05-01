@@ -19,6 +19,7 @@ import com.wordnik.swagger.core.DocumentationEndPoint;
 import com.wordnik.swagger.core.DocumentationOperation;
 import com.wordnik.swagger.core.DocumentationParameter;
 import com.wordnik.swagger.core.util.JsonUtil;
+import com.hibu.bragger.swagger.SwaggerSpecs11;
 
 public class SwaggerPlay2Helper {
 	
@@ -45,7 +46,6 @@ public class SwaggerPlay2Helper {
 				
 				String json = ApiHelpInventory.getPathHelpJson(swaggerMainUrl, null);
 				if (json!=null && !json.isEmpty() && controllerClasses.get(resourceName)!=null) {
-					
 					
 					Documentation simpleDoc = JsonUtil.getJsonMapper().readValue(json, Documentation.class);
 					
@@ -79,37 +79,37 @@ public class SwaggerPlay2Helper {
 			Documentation typedResourceDoc = PlayApiReader.read(controllerClass, null, null, null, null);
 			
 			if (typedResourceDoc.getApis()!=null) {
-				for (DocumentationEndPoint api : typedResourceDoc.getApis()) {
+			for (DocumentationEndPoint api : typedResourceDoc.getApis()) {
 					
 					if (api.getOperations()!=null) {
-						for (DocumentationOperation operation : api.getOperations()) {
+					for (DocumentationOperation operation : api.getOperations()) {
 							
-							try {
-								
-								// operation response type
-								String responseModel = SwaggerHelper.getModelFromValueType(operation.getResponseClass());
-								if (responseModel!=null) {
-									String operationResponseClassName = operation.getResponseTypeInternal();
+							// operation response type
+							String responseModel = SwaggerSpecs11.getModelFromValueType(operation.getResponseClass());
+							if (responseModel!=null) {
+								String operationResponseClassName = operation.getResponseTypeInternal();
+								try {									
 									modelClassesSet.add(Play.application().classloader().loadClass(operationResponseClassName));
+								} catch (ClassNotFoundException e) {
+									Logger.error("model class not found: " + e.getMessage() + " it won't be part of the models XSD");
 								}
-								
-								// operation non primitive parameters
-								if (operation.getParameters() != null) {
-									for (DocumentationParameter param : operation.getParameters()) {
-										String paramModel = SwaggerHelper.getModelFromValueType(param.getValueTypeInternal());
-										if (paramModel!=null) {
+							}
+							
+							// operation non primitive parameters
+							if (operation.getParameters() != null) {
+								for (DocumentationParameter param : operation.getParameters()) {
+									String paramModel = SwaggerSpecs11.getModelFromValueType(param.getValueTypeInternal());
+									if (paramModel!=null) {
+										try {
 											modelClassesSet.add(Play.application().classloader().loadClass(paramModel));
+										} catch (ClassNotFoundException e) {
+											Logger.error("model class not found: " + e.getMessage() + " it won't be part of the models XSD");
 										}
 									}
 								}
-								
-							} catch (ClassNotFoundException e) {
-								Logger.error("model class not found: " + e.getMessage());
 							}
-						}
-					}
-				}
-			}
+					}}
+			}}
 		}
 		
 		// convert set modelClasses to an array of Class

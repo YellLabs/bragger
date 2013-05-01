@@ -78,7 +78,7 @@ object ApplicationBuild extends Build {
 			EclipseKeys.executionEnvironment in ThisBuild := Some(EclipseExecutionEnvironment.JavaSE16),
 			EclipseKeys.projectFlavor in ThisBuild := EclipseProjectFlavor.Java,
 			EclipseKeys.skipParents in ThisBuild := false,
-			EclipseKeys.withSource in ThisBuild := false
+			EclipseKeys.withSource in ThisBuild := true
 			
 		)
 	)

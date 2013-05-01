@@ -36,14 +36,14 @@ public class AxisClientFactory implements ClientFactory {
 	 * @throws InstantiationException
 	 */
 	@SuppressWarnings("unchecked")
-	public <ITF, IMPL, RSC> ITF getClient(Class<ITF> serviceInterface, Class<IMPL> stubImplementation, Class<RSC> apiResourceClass, boolean wrappedResponse) throws InstantiationException {
+	public <ITF, IMPL, RSC> ITF getClient(Class<ITF> serviceInterface, Class<IMPL> stubImplementation, Class<RSC> apiResourceClass, boolean wrappedResponse, String serviceAppName) throws InstantiationException {
 		
 		try {
 			
 			Stub stub = (Stub) stubImplementation.newInstance();
 			
 			// using a custom builder to unmarshal responses from the api
-			Builder jsonUnmarshaller = new WrappingObjectJSONOMBuilder(wrappedResponse, apiResourceClass.getSimpleName());
+			Builder jsonUnmarshaller = new WrappingObjectJSONOMBuilder(serviceAppName, wrappedResponse, apiResourceClass.getSimpleName());
 			
 			// using a custom jsonformatter to marshal objects to send them to the api on the wire
 			MessageFormatter jsonMarshaller = null;
@@ -77,8 +77,8 @@ public class AxisClientFactory implements ClientFactory {
 	 * @throws AxisFault
 	 * @throws InstantiationException
 	 */
-	public <ITF, IMPL, RSC> ITF getClient(Class<ITF> serviceInterface, Class<IMPL> stubImplementation, Class<RSC> apiResourceClass)  throws InstantiationException {
-		return getClient(serviceInterface, stubImplementation, apiResourceClass, false);
+	public <ITF, IMPL, RSC> ITF getClient(Class<ITF> serviceInterface, Class<IMPL> stubImplementation, Class<RSC> apiResourceClass, String serviceAppName)  throws InstantiationException {
+		return getClient(serviceInterface, stubImplementation, apiResourceClass, false, serviceAppName);
 	}
 	
 	/**
@@ -99,7 +99,7 @@ public class AxisClientFactory implements ClientFactory {
 		// this is the expensive call
 		Class<Stub> stubImpl = findStubImplementationForInterface(serviceInterface);
 		
-		return getClient(serviceInterface, stubImpl, apiResourceClass);
+		return getClient(serviceInterface, stubImpl, apiResourceClass, null);
 	}
 	
 	// ========================================================================

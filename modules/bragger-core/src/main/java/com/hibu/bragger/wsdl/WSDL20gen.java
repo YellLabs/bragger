@@ -2,6 +2,7 @@ package com.hibu.bragger.wsdl;
 
 import java.net.URI;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.ow2.easywsdl.schema.api.ComplexType;
@@ -13,8 +14,10 @@ import org.ow2.easywsdl.schema.api.Type;
 import org.ow2.easywsdl.schema.api.XmlException;
 import org.ow2.easywsdl.wsdl.WSDLFactory;
 import org.ow2.easywsdl.wsdl.api.Binding;
+import org.ow2.easywsdl.wsdl.api.BindingFault;
 import org.ow2.easywsdl.wsdl.api.Description;
 import org.ow2.easywsdl.wsdl.api.Endpoint;
+import org.ow2.easywsdl.wsdl.api.Fault;
 import org.ow2.easywsdl.wsdl.api.Input;
 import org.ow2.easywsdl.wsdl.api.InterfaceType;
 import org.ow2.easywsdl.wsdl.api.Operation;
@@ -26,15 +29,19 @@ import org.ow2.easywsdl.wsdl.api.abstractItf.AbsItfBinding.BindingConstants;
 import org.ow2.easywsdl.wsdl.api.abstractItf.AbsItfDescription.WSDLVersionConstants;
 import org.ow2.easywsdl.wsdl.api.abstractItf.AbsItfOperation.MEPPatternConstants;
 import org.ow2.easywsdl.wsdl.impl.wsdl20.BindingOperationImpl;
+import org.ow2.easywsdl.wsdl.impl.wsdl20.InterfaceTypeImpl;
 import org.ow2.easywsdl.wsdl.impl.wsdl20.WSDLWriterImpl;
+import org.ow2.easywsdl.wsdl.org.w3.ns.wsdl.InterfaceFaultType;
+import org.ow2.easywsdl.wsdl.org.w3.ns.wsdl.ObjectFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.ebmwebsourcing.easycommons.xml.XMLPrettyPrinter;
-import com.hibu.bragger.swagger.SwaggerHelper;
+import com.hibu.bragger.swagger.SwaggerSpecs11;
 import com.wordnik.swagger.core.Documentation;
 import com.wordnik.swagger.core.DocumentationEndPoint;
+import com.wordnik.swagger.core.DocumentationError;
 import com.wordnik.swagger.core.DocumentationOperation;
 import com.wordnik.swagger.core.DocumentationParameter;
 
@@ -51,6 +58,9 @@ import com.wordnik.swagger.core.DocumentationParameter;
 public class WSDL20gen {
 	
 	private static Logger logger = LoggerFactory.getLogger(WSDL20gen.class.getName());
+
+	private static final String ERROR_RESPONSE_TYPENAME = "errorResponse";
+	private static final String ERROR_RESPONSE_ELEMENTNAME = "genericError";
 	
 	private static final String HTTP_WWW_W3_ORG_NS_WSDL = "http://www.w3.org/ns/wsdl";
 	private static final String HTTP_WWW_W3_ORG_NS_WSDL_SOAP = "http://www.w3.org/ns/wsdl/soap";
@@ -66,6 +76,31 @@ public class WSDL20gen {
 	private static final String HTTP_HIBU_COM_API = "http://hibu.com/apis";
 	private static final String TYPES = "models";
 
+	/**
+	 * 
+	 * @param appName
+	 * @return
+	 */
+	public static String getModelsNamespaceUri(String appName) {
+		return HTTP_HIBU_COM_API + "/" + appName + "/" + getModelsNamespacePrefix();
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static String getModelsNamespacePrefix() {
+		return WSDL20gen.TYPES;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static String getErrorResponseElementName() {
+		return WSDL20gen.ERROR_RESPONSE_ELEMENTNAME;
+	}
+	
 	/**
 	 * 
 	 * @param resourceName
@@ -90,45 +125,47 @@ public class WSDL20gen {
 			// this name space becomes the package for the generated stub and interface
 			String mainServiceNamespace =  HTTP_HIBU_COM_API + "/" + appName + "/" + webServiceName;
 			
-			// this name space becomes the package for the generated model classes
-			String modelsNamespace = HTTP_HIBU_COM_API + "/" + appName + "/" + WSDL20gen.TYPES;
-			
 			String targetNamespace = mainServiceNamespace + "/wsdl";
 			
 			String bindingProtocolHttp = BINDING_PROTOCOL_HTTP;
 	
-			// global infos
+			// ----- global infos
 			WSDLFactory wsdlFactory = WSDLFactory.newInstance();
 			Description desc20 = wsdlFactory.newDescription(WSDLVersionConstants.WSDL20);
 			desc20.setTargetNamespace(targetNamespace);
 			desc20.setQName(new QName(desc20.getTargetNamespace(), descriptionName));
 	
-			// types
+			
+			// ----- types
 			Types types = desc20.createTypes();
-
+			
 			// first schema is only to include the types generated via JAXB from models
 			Schema modelsSchema = types.createSchema();
-			modelsSchema.setTargetNamespace(modelsNamespace);
+			modelsSchema.setTargetNamespace(getModelsNamespaceUri(appName));
 			Include includeDef = modelsSchema.createInclude();
 			includeDef.setLocationURI(new URI(resourceDoc.getBasePath() + xsdUrl));
 			modelsSchema.addInclude(includeDef);
 			types.addSchema(modelsSchema);
-
 			desc20.setTypes(types);
 			
-			// interface
+			// generic error type
+			createGenericError(modelsSchema, appName);
+			
+			
+			// ----- interface
 			InterfaceType itf = desc20.createInterface();
 			itf.setQName(new QName(desc20.getTargetNamespace(), interfaceName));
+			
 			desc20.addInterface(itf);
-	
-			// binding
+						
+			// ----- binding
 			Binding binding = desc20.createBinding();
 			binding.setQName(new QName(desc20.getTargetNamespace(), restHttpBindingName));
 			binding.setInterface(itf);
 			binding.setTransportProtocol(bindingProtocolHttp);
 			desc20.addBinding(binding);
 			
-			// service
+			// ----- service
 			Service service = desc20.createService();
 			service.setQName(new QName(desc20.getTargetNamespace(), webServiceName));
 			service.setInterface(itf);
@@ -143,26 +180,24 @@ public class WSDL20gen {
 			service.addEndpoint(restEndpoint);
 	
 			if (resourceDoc.getApis()!=null) {
-				for (DocumentationEndPoint api : resourceDoc.getApis()) {
+			for (DocumentationEndPoint api : resourceDoc.getApis()) {
 					
 					if (api.getOperations()!=null) {
-						for (DocumentationOperation operation : api.getOperations()) {
+					for (DocumentationOperation operation : api.getOperations()) {
 							
 							// abstract part: interface operations
-							Operation wsdlAbstractOperation = WSDL20gen.getWSDLInterfaceOperation(itf, operation, modelsSchema, modelsNamespace);
+							Operation wsdlAbstractOperation = WSDL20gen.getWSDLInterfaceOperation(itf, service, operation, modelsSchema, appName);
 							itf.addOperation(wsdlAbstractOperation);
 							
 							// concrete part: binding operations
-							BindingOperationImpl bindingOperation = WSDL20gen.getWSDLBindingOperation(api.getPath(), binding, wsdlAbstractOperation, operation);
+							BindingOperationImpl bindingOperation = WSDL20gen.getWSDLBindingOperation(api.getPath(), service, binding, wsdlAbstractOperation, operation);
+														
 							binding.addBindingOperation(bindingOperation);
-						}
-					}
-					
-				} 
-			}
+					}}
+			}}
 			
-			// writing wsdl
-			String wsdlAsString = WSDL20gen.getWSDLDocumentAsString(modelsNamespace, desc20);
+			// ----- writing wsdl
+			String wsdlAsString = WSDL20gen.getWSDLDocumentAsString(appName, desc20);
 			
 			return wsdlAsString;
 		
@@ -179,7 +214,7 @@ public class WSDL20gen {
 	 * @return
 	 * @throws BraggerException
 	 */
-	public static String getWSDLDocumentAsString(String modelsNamespace, Description desc20) {
+	public static String getWSDLDocumentAsString(String appName, Description desc20) {
 		
 		try {
 			
@@ -191,7 +226,7 @@ public class WSDL20gen {
 					"wsdl-http", HTTP_WWW_W3_ORG_NS_WSDL_HTTP,
 					"wsdl-soap", HTTP_WWW_W3_ORG_NS_WSDL_SOAP ,
 					"tns", desc20.getTargetNamespace() ,
-					TYPES, modelsNamespace
+					TYPES, getModelsNamespaceUri(appName)
 			});
 			
 			Document outDoc = writer.getDocument(desc20);
@@ -220,14 +255,15 @@ public class WSDL20gen {
 	  * @return
 	  * @throws WSDLException
 	  */
-	private static Operation getWSDLInterfaceOperation(InterfaceType itf, DocumentationOperation operation, Schema typesSchema, String modelsNamespace) throws WSDLException {
+	private static Operation getWSDLInterfaceOperation(InterfaceType itf, Service service, DocumentationOperation operation, Schema typesSchema, String appName) throws WSDLException {
 		
 		String targetNamespace = itf.getQName().getNamespaceURI();
+		String modelsNamespace = getModelsNamespaceUri(appName);
 		
 		Operation wsdlAbstractOperation = itf.createOperation();
 		wsdlAbstractOperation.setQName(new QName(targetNamespace, operation.getNickname()));
 		
-		// TODO this is not printed
+		// FIXME this is not printed
 		org.ow2.easywsdl.schema.api.Documentation opDescription = wsdlAbstractOperation.createDocumentation();
 		opDescription.setContent("Summary: " + operation.getSummary() + " - Notes: " + operation.getNotes());
 		wsdlAbstractOperation.setDocumentation(opDescription);
@@ -241,6 +277,7 @@ public class WSDL20gen {
 			throw new WSDLException(e);
 		}
 		
+		
 		// ----- request message
 		// if the operation in the swagger specs has no parameters 
 		// then no input message request message should be added to the wsdl
@@ -251,20 +288,43 @@ public class WSDL20gen {
 			requestMessage.setElement(requestElement);
 		} else { 
 			// NOTE! setting the message name on the requestMessage element, causes the axis wsdl2java tool to ignore the element
-			requestMessage.setMessageName(new QName(modelsNamespace, operation.getNickname() + "_request"));
+			//requestMessage.setMessageName(new QName(modelsNamespace, operation.getNickname() + "_request"));
+			Element requestMessageElement = typesSchema.createElement();
+			requestMessageElement.setRef(new QName("#none"));
+			requestMessage.setElement(requestMessageElement);
 		}
 		wsdlAbstractOperation.setInput(requestMessage);
+		
 		
 		// ----- response message
 		// even if the operation in the swagger specs has no response class
 		// an EmptyResponse message is defined anyway to workaround a bug in the wsdl2java generation tool
+		// can't use a #none ref here like in the request element as the axis jaxbri databinding used in wsdl2java wouldn't be able to generate the client code
 		Output responseMessage = wsdlAbstractOperation.createOutput();
-		Element responseElement = createMethodResponseElement(typesSchema, targetNamespace, modelsNamespace, operation);
-		responseElement.setQName(new QName(modelsNamespace, operation.getNickname() + "_response"));
-		responseMessage.setElement(responseElement);
+		if (!SwaggerSpecs11.isVoidType(operation.getResponseClass())) {			
+			Element responseElement = createMethodResponseElement(typesSchema, targetNamespace, modelsNamespace, operation);
+			responseElement.setQName(new QName(modelsNamespace, operation.getNickname() + "_response"));
+			responseMessage.setElement(responseElement);
+		} else {
+			Element responseMessageElement = typesSchema.createElement();
+			responseMessageElement.setRef(new QName("#none"));
+			responseMessage.setElement(responseMessageElement);
+		}
 		wsdlAbstractOperation.setOutput(responseMessage);
 		
-		// TODO!!!! fault response messages
+	
+		// ----- fault messages
+		InterfaceTypeImpl itfImpl = (InterfaceTypeImpl) itf;
+		InterfaceFaultType itfFault = new ObjectFactory().createInterfaceFaultType();
+		itfFault.setName(service.getQName().getLocalPart() + "Error");
+		itfFault.setElement(WSDL20gen.getModelsNamespacePrefix() + ":" + WSDL20gen.ERROR_RESPONSE_ELEMENTNAME);
+		
+		JAXBElement<InterfaceFaultType> jaxbFault = new JAXBElement<InterfaceFaultType>(new QName("http://www.w3.org/ns/wsdl", "fault"), InterfaceFaultType.class, InterfaceType.class, itfFault);
+		itfImpl.getModel().getOperationOrFaultOrAny().add(jaxbFault);
+		
+		Fault outFault = wsdlAbstractOperation.createFault();
+		outFault.setElement(EasyWsdlHelper.getElement(targetNamespace, service.getQName().getLocalPart() + "Error"));
+		wsdlAbstractOperation.addFault(outFault);
 		
 		return wsdlAbstractOperation;
 	}
@@ -277,10 +337,10 @@ public class WSDL20gen {
 	 * @param operation
 	 * @return
 	 */
-	private static BindingOperationImpl getWSDLBindingOperation(String basePath, Binding binding, Operation wsdlAbstractOperation, DocumentationOperation operation) {
+	private static BindingOperationImpl getWSDLBindingOperation(String basePath, Service service, Binding binding, Operation wsdlAbstractOperation, DocumentationOperation operation) {
 		
 		String targetNamespace = binding.getQName().getNamespaceURI();
-		
+
 		BindingOperationImpl bindingOperation = (BindingOperationImpl) binding.createBindingOperation();
 		bindingOperation.setQName(new QName(targetNamespace, wsdlAbstractOperation.getQName().getLocalPart())); // set the "ref" attribute
 
@@ -308,6 +368,18 @@ public class WSDL20gen {
 			bindingOperation.getHttpFaultSerialization();
 			bindingOperation.getHttpQueryParameterSeparator();
 			
+			// always bind the generic status codes plus any other errors defined in the api through the annotation @ApiErrors
+			addBindingFault(service, targetNamespace, bindingOperation, 500);
+			addBindingFault(service, targetNamespace, bindingOperation, 404);
+			addBindingFault(service, targetNamespace, bindingOperation, 400);
+			if (operation.getErrorResponses()!=null) {
+				for (DocumentationError docError : operation.getErrorResponses()) {
+					if (docError!=null && docError.getCode()!=500 && docError.getCode()!=404 && docError.getCode()!=400)
+						addBindingFault(service, targetNamespace, bindingOperation, docError.getCode());
+				}
+			}
+			
+			
 		} catch (XmlException e) {
 			logger.error(e.getMessage());
 		}
@@ -331,7 +403,7 @@ public class WSDL20gen {
 		Element requestMessageElement = typesSchema.createElement();
 		
 		// set name attribute
-		// TODO FIXME the namespace prefix should be added from the parameter modelNamespace
+		// FIXME the namespace prefix should be added from the parameter modelNamespace
 		requestMessageElement.setQName(new QName(modelsNamespace,  WSDL20gen.TYPES + ":" + operation.getNickname() + "_request"));
 
 		ComplexType requestMessageType = EasyWsdlHelper.getComplexType(modelsNamespace, operation.getNickname() + "_request_type");
@@ -360,18 +432,17 @@ public class WSDL20gen {
 				
 				// DATA TYPE
 				String dataType = docParam.dataType();
-				if (SwaggerHelper.isVoidType(dataType)) {
+				if (SwaggerSpecs11.isVoidType(dataType)) {
 					
-				} else if (SwaggerHelper.isBasicType(dataType)) {
+				} else if (SwaggerSpecs11.isPrimitiveType(dataType)) {
 					
-					// simple type
-					paramElement.setType(SwaggerHelper.mapBasicDataType(dataType, modelsNamespace, typesSchema));
+					paramElement.setType(SwaggerSpecs11.mapBasicDataType(dataType, modelsNamespace, typesSchema));
 					
 				} else {
 					
-					if (SwaggerHelper.isArrayType(dataType)) {
+					if (SwaggerSpecs11.isContainerType(dataType)) {
 
-						String modelName = SwaggerHelper.getModelSimpleName(dataType);
+						String modelName = SwaggerSpecs11.getModelSimpleName(dataType);
 												
 						Type modelType = EasyWsdlHelper.getComplexType(modelsNamespace, modelName);
 						
@@ -450,22 +521,22 @@ public class WSDL20gen {
 
 		// set type attribute
 		String responseClass = operation.getResponseClass();
-		if (SwaggerHelper.isVoidType(responseClass)) {
+		if (SwaggerSpecs11.isVoidType(responseClass)) {
 
-			Type type = SwaggerHelper.mapVoidDataType("EmptyResponse", modelsNamespace, typesSchema);
+			Type type = SwaggerSpecs11.mapVoidDataType("EmptyResponse", modelsNamespace, typesSchema);
 			responseMessageElement.setType(type);
 			
-		} else if (SwaggerHelper.isBasicType(responseClass)) {
+		} else if (SwaggerSpecs11.isPrimitiveType(responseClass)) {
 			
-			Type type = SwaggerHelper.mapBasicDataType(responseClass, modelsNamespace, typesSchema);
+			Type type = SwaggerSpecs11.mapBasicDataType(responseClass, modelsNamespace, typesSchema);
 			responseMessageElement.setType(type);
 			
 		} else {
 			
 			// list of models
-			if (SwaggerHelper.isArrayType(responseClass)) {
+			if (SwaggerSpecs11.isContainerType(responseClass)) {
 
-				String modelName = SwaggerHelper.getModelSimpleName(responseClass);
+				String modelName = SwaggerSpecs11.getModelSimpleName(responseClass);
 				Type modelType = EasyWsdlHelper.getComplexType(modelsNamespace, modelName);
 				
 				// declare a new type for the list of models
@@ -507,4 +578,56 @@ public class WSDL20gen {
 		return responseMessageElement;
 	}
 	
+	private static void createGenericError(Schema typesSchema, String appName) {
+		
+		ComplexType internalServerErrorType = EasyWsdlHelper.getComplexType(getModelsNamespaceUri(appName), ERROR_RESPONSE_TYPENAME);
+		Sequence sequence = internalServerErrorType.createSequence();
+		internalServerErrorType.setSequence(sequence);
+		
+		Element errorCodeElement = sequence.createElement();
+		errorCodeElement.setQName(new QName("code"));
+		errorCodeElement.setType(EasyWsdlHelper.getSimpleType(null, "xs:int"));
+		errorCodeElement.setMinOccurs(0);
+		errorCodeElement.setMaxOccurs("1");
+		sequence.addElement(errorCodeElement);
+		
+		Element errorTypeElement = sequence.createElement();
+		errorTypeElement.setQName(new QName("type"));
+		errorTypeElement.setType(EasyWsdlHelper.getSimpleType(null, "xs:string"));
+		errorTypeElement.setMinOccurs(0);
+		errorTypeElement.setMaxOccurs("1");
+		sequence.addElement(errorTypeElement);
+		
+		Element errorMessageElement = sequence.createElement();
+		errorMessageElement.setQName(new QName("message"));
+		errorMessageElement.setType(EasyWsdlHelper.getSimpleType(null, "xs:string"));
+		errorMessageElement.setMinOccurs(0);
+		errorMessageElement.setMaxOccurs("1");
+		sequence.addElement(errorMessageElement);
+		
+		Element internalServerErrorElement = typesSchema.createElement();
+		internalServerErrorElement.setType(internalServerErrorType);
+		internalServerErrorElement.setQName(new QName(WSDL20gen.ERROR_RESPONSE_ELEMENTNAME));
+		
+		// add element to schema
+		if (typesSchema.getElement(internalServerErrorElement.getQName())==null) {
+			System.out.println("adding element " + internalServerErrorElement.getQName() + " to schema");
+			typesSchema.addElement(internalServerErrorElement);
+		}
+		
+		// add type to schema
+		if (typesSchema.getType(internalServerErrorType.getQName())==null) {
+			System.out.println("adding type " + internalServerErrorType.getQName() + " to schema");
+			typesSchema.addType(internalServerErrorType);
+		}
+
+	}
+	
+	private static void addBindingFault(Service service, String targetNamespace, BindingOperationImpl bindingOperation, Integer statusCode) throws XmlException {
+		BindingFault bindingFault = bindingOperation.createFault();
+		bindingFault.setRef(new QName(targetNamespace, service.getQName().getLocalPart() + "Error"));
+		bindingFault.getOtherAttributes().put(new QName(BindingConstants.HTTP_BINDING4WSDL20.value().toString(), "code"), statusCode.toString());
+		bindingOperation.addFault(bindingFault);
+	}
+
 }

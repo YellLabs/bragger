@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -18,6 +20,8 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.json.AbstractJSONDataSource;
 import org.apache.axis2.json.AbstractJSONOMBuilder;
 import org.apache.axis2.transport.http.util.URIEncoderDecoder;
+
+import com.hibu.bragger.wsdl.WSDL20gen;
 
 /**
  * This is like JSONOMBuilder but it supports RESTful api methods whose response is not wrapped in a container object.
@@ -35,28 +39,38 @@ import org.apache.axis2.transport.http.util.URIEncoderDecoder;
 public class WrappingObjectJSONOMBuilder extends AbstractJSONOMBuilder {
 
 	private boolean jsonResponseWrappedInAContainer;
+	private String serviceName;
 	private String resourceName;
 	
-	public WrappingObjectJSONOMBuilder() {
+	public WrappingObjectJSONOMBuilder(String serviceName) {
 		super();
+		this.serviceName = serviceName;
 		this.jsonResponseWrappedInAContainer = false;
 		this.resourceName = "Object";
 	}
 	
-	public WrappingObjectJSONOMBuilder(boolean wrappedResponse) {
+	public WrappingObjectJSONOMBuilder(String serviceName, boolean wrappedResponse) {
 		super();
+		this.serviceName = serviceName;
 		this.jsonResponseWrappedInAContainer = wrappedResponse;
 	}
 
-	public WrappingObjectJSONOMBuilder(boolean wrappedResponse, String resourceName) {
+	public WrappingObjectJSONOMBuilder(String serviceName, boolean wrappedResponse, String resourceName) {
 		super();
+		this.serviceName = serviceName;
 		this.jsonResponseWrappedInAContainer = wrappedResponse;
 		this.resourceName = resourceName;
 	}
 	
     @Override
     protected AbstractJSONDataSource getDataSource(Reader jsonReader, String prefix, String localName) {
-    	return new WrappingObjectJSONDatasource(jsonReader, "\"" + prefix + localName + "\"", jsonResponseWrappedInAContainer);
+    	if (prefix==null || prefix.equals("")) {
+    		return new WrappingObjectJSONDatasource(jsonReader, "\"" + localName + "\"", jsonResponseWrappedInAContainer);
+    	} else {
+    		Map<String, String> map = new HashMap<String, String>();
+    		map.put(WSDL20gen.getModelsNamespaceUri(serviceName), WSDL20gen.getModelsNamespacePrefix());
+    		return new WrappingObjectJSONDatasource(jsonReader, "\"" + prefix + "." + localName + "\"", jsonResponseWrappedInAContainer, map);
+    	}
     }
 
     @Override
@@ -151,7 +165,14 @@ public class WrappingObjectJSONOMBuilder extends AbstractJSONOMBuilder {
 					}
 				}
 			} else {
-				localName = resourceName;
+				if (messageContext.isProcessingFault()) {
+					ns = factory.createOMNamespace(WSDL20gen.getModelsNamespaceUri(serviceName), WSDL20gen.getModelsNamespacePrefix());
+					prefix = WSDL20gen.getModelsNamespacePrefix();
+					localName = WSDL20gen.getErrorResponseElementName();
+				}
+				else {					
+					localName = resourceName;
+				}
 			}
 		} catch (IOException e) {
 			throw AxisFault.makeFault(e);

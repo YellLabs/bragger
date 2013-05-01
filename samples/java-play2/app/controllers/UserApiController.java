@@ -22,8 +22,13 @@ public class UserApiController extends BaseApiController {
 
 
 
-	@ApiOperation(value = "Create user", notes = "This can only be done by the logged in user.")
-	@ApiParamsImplicit(@ApiParamImplicit(name = "body", value = "Created user object", required = true, dataType = "models.User", paramType = "body"))
+	@ApiOperation(
+		value = "Create user", 
+		notes = "This can only be done by the logged in user."
+	)
+	@ApiParamsImplicit(
+		@ApiParamImplicit(name = "body", value = "Created user object", required = true, dataType = "models.User", paramType = "body")
+	)
 	public static Result createUser() {
 		Object o = request().body().asJson();
 		try {
@@ -38,7 +43,10 @@ public class UserApiController extends BaseApiController {
 
 
 
-	@ApiOperation(value = "Creates list of users with given input array", responseClass = "void")
+	@ApiOperation(
+		value = "Creates list of users with given input array", 
+		responseClass = "void"
+	)
 	@ApiParamsImplicit(
 		@ApiParamImplicit(name = "body", value = "List of user object", required = true, dataType = "Array[models.User]", paramType = "body")
 	)
@@ -58,7 +66,10 @@ public class UserApiController extends BaseApiController {
 
 
 
-	@ApiOperation(value = "Creates list of users with given list input", responseClass = "void")
+	@ApiOperation(
+		value = "Creates list of users with given list input", 
+		responseClass = "void"
+	)
 	@ApiParamsImplicit(
 		@ApiParamImplicit(name = "body", value = "List of user object", required = true, dataType = "List[models.User]", paramType = "body")
 	)
@@ -78,15 +89,20 @@ public class UserApiController extends BaseApiController {
 
 
 
-	@ApiOperation(value = "Fetch a user", notes = "This can only be done by the logged in user.")
-	@ApiErrors({ @ApiError(code = 400, reason = "Invalid username supplied"),
+	@ApiOperation(
+		value = "Fetch a user", 
+		notes = "This can only be done by the logged in user."
+	)
+	@ApiErrors({ 
+		@ApiError(code = 400, reason = "Invalid username supplied"),
 		@ApiError(code = 404, reason = "User not found") 
 	})
 	@ApiParamsImplicit({
-		@ApiParamImplicit(name = "username", value = "name that need to be updated", required = true, dataType = "String", paramType = "path"),
+		@ApiParamImplicit(name = "username", value = "name that need to be updated", required = true, dataType = "string", paramType = "path"),
 		@ApiParamImplicit(name = "body", value = "Updated user object", required = true, dataType = "models.User", paramType = "body") 
 	})
 	public static Result updateUser(String username) {
+		//throw new RuntimeException("testing faults...");
 		Object o = request().body().asJson();
 		try {
 			User user = (User) BaseApiController.mapper.readValue(o.toString(), User.class);
@@ -100,7 +116,10 @@ public class UserApiController extends BaseApiController {
 
 
 
-	@ApiOperation(value = "Delete user", notes = "This can only be done by the logged in user.")
+	@ApiOperation(
+		value = "Delete user", 
+		notes = "This can only be done by the logged in user."
+	)
 	@ApiErrors({ 
 		@ApiError(code = 400, reason = "Invalid username supplied"),
 		@ApiError(code = 404, reason = "User not found") 
@@ -113,7 +132,10 @@ public class UserApiController extends BaseApiController {
 
 
 
-	@ApiOperation(value = "Get user by user name", responseClass = "models.User")
+	@ApiOperation(
+		value = "Get user by user name", 
+		responseClass = "models.User"
+	)
 	@ApiErrors({ 
 		@ApiError(code = 400, reason = "Invalid username supplied"),
 		@ApiError(code = 404, reason = "User not found") 
@@ -129,7 +151,10 @@ public class UserApiController extends BaseApiController {
 
 
 
-		@ApiOperation(value = "Logs user into the system", responseClass = "String")
+	@ApiOperation(
+		value = "Logs user into the system", 
+		responseClass = "string"
+	)
 	@ApiErrors(
 		@ApiError(code = 400, reason = "Invalid username and password combination")
 	)
@@ -141,7 +166,9 @@ public class UserApiController extends BaseApiController {
 
 
 
-	@ApiOperation(value = "Logs out current logged in user session")
+	@ApiOperation(
+		value = "Logs out current logged in user session"
+	)
 	public static Result logoutUser() {
 		return ok();
 	}

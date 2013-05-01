@@ -4,6 +4,7 @@ import javax.xml.namespace.QName;
 
 import org.ow2.easywsdl.schema.SchemaFactory;
 import org.ow2.easywsdl.schema.api.ComplexType;
+import org.ow2.easywsdl.schema.api.Element;
 import org.ow2.easywsdl.schema.api.Schema;
 import org.ow2.easywsdl.schema.api.SchemaException;
 import org.ow2.easywsdl.schema.api.SimpleType;
@@ -38,6 +39,19 @@ public class EasyWsdlHelper {
 		}
 		
 		return responseMessageType;	
+	}
+	
+	public static Element getElement(String namespace, String name) {
+		try {
+			Schema newSchema = SchemaFactory.newInstance().newSchema();
+			newSchema.setTargetNamespace(namespace);
+			Element element = newSchema.createElement();
+			element.setQName(new QName(namespace, name));
+			return element;
+		} catch (SchemaException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 }

@@ -27,7 +27,11 @@ public class PetApiController extends BaseApiController {
 
 
 
-	@ApiOperation(value = "Find pet by ID", responseClass = "models.Pet", notes = "Returns a pet when ID < 10. ID > 10 or nonintegers will simulate API error conditions")
+	@ApiOperation(
+		value = "Find pet by ID", 
+		responseClass = "models.Pet", 
+		notes = "Returns a pet when ID < 10. ID > 10 or nonintegers will simulate API error conditions"
+	)
 	@ApiErrors({
 		@ApiError(code=400, reason="Invalid ID supplied"),
 		@ApiError(code=404, reason="Pet not found")
@@ -39,7 +43,9 @@ public class PetApiController extends BaseApiController {
 
 
 	
-	@ApiOperation(value="Add a new pet to the store")
+	@ApiOperation(
+		value="Add a new pet to the store"
+	)
 	@ApiErrors({
 		@ApiError(code=405, reason="Invalid input")
 	})
@@ -63,7 +69,9 @@ public class PetApiController extends BaseApiController {
 
 
 	
-	@ApiOperation(value="Update an existing pet")
+	@ApiOperation(
+		value="Update an existing pet"
+	)
 	@ApiErrors({ 
 		@ApiError(code=400, reason="Invalid ID supplied"),
 		@ApiError(code=404, reason="Pet not found"),
@@ -86,8 +94,15 @@ public class PetApiController extends BaseApiController {
 
 
 	
-	@ApiOperation(value="Finds Pets by status", responseClass="models.Pet", multiValueResponse=true, notes="Multiple status values can be provided with comma separated strings")
-	@ApiErrors({@ApiError(code=400, reason="Invalid status value")})
+	@ApiOperation(
+		value="Finds Pets by status", 
+		responseClass="models.Pet", 
+		multiValueResponse=true, 
+		notes="Multiple status values can be provided with comma separated strings"
+	)
+	@ApiErrors({
+		@ApiError(code=400, reason="Invalid status value")
+	})
 	public static Result findPetsByStatus(@ApiParam(value="Status values that need to be considered for filter", required=true, defaultValue="available", allowableValues="available,pending,sold", allowMultiple=true) @QueryParam("status") String status) {
 		Logger.info(PetApiController.class.getSimpleName() + ": findPetByStatus - start");
 		List<Pet> pets = PetData.findPetByStatus(status);
@@ -97,7 +112,11 @@ public class PetApiController extends BaseApiController {
 
 
 	
-	@ApiOperation(value = "Finds Pets by tags", responseClass = "models.Pet", multiValueResponse = true, notes = "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing."
+	@ApiOperation(
+		value = "Finds Pets by tags", 
+		responseClass = "models.Pet", 
+		multiValueResponse = true, 
+		notes = "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing."
 	)
 	@ApiErrors({
 		@ApiError(code=400, reason="Invalid tag value")

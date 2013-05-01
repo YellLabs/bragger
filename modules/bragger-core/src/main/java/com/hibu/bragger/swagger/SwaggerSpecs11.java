@@ -11,23 +11,60 @@ import org.ow2.easywsdl.schema.api.Type;
 
 import com.hibu.bragger.wsdl.EasyWsdlHelper;
 
-public class SwaggerHelper {
+/**
+ * helper to encapsulate the swagger specs version 1.1 data types and constants
+ */
+public class SwaggerSpecs11 {
 
-	private static Set<String> basicTypes = new HashSet<String>();
+	// see https://github.com/wordnik/swagger-core/wiki/datatypes#primitives
+	private static Set<String> primitiveTypes = new HashSet<String>();
 	
-	private static Set<String> arrayTypes = new HashSet<String>();
+	// see https://github.com/wordnik/swagger-core/wiki/datatypes#containers
+	private static Set<String> containerTypes = new HashSet<String>();
+
+	// void
+	private static final String DATATYPE_VOID = "void";
+	
+	// swagger primitives: lowercased until a swagger annotations validator is implemented
+	public static final String DATATYPE_BYTE = "byte";
+	public static final String DATATYPE_BOOLEAN = "boolean";
+	public static final String DATATYPE_INT = "int";
+	public static final String DATATYPE_LONG = "long";
+	public static final String DATATYPE_FLOAT = "float";
+	public static final String DATATYPE_DOUBLE = "double";
+	public static final String DATATYPE_NUMBER = "number";
+	public static final String DATATYPE_STRING = "string";
+	public static final String DATATYPE_DATE = "date";	
+	
+	// containers
+	public static final String DATATYPE_ARRAY = "Array";
+	public static final String DATATYPE_LIST = "List";
+	public static final String DATATYPE_SET = "Set";
 	
 	static {
 		
-		basicTypes.addAll(
+		primitiveTypes.addAll(
 			Arrays.asList(
-				new String[]{"string", "String", "number", "int", "boolean", "object", "any"}
+				new String[] { 
+					DATATYPE_BYTE, 
+					DATATYPE_BOOLEAN, 
+					DATATYPE_INT, 
+					DATATYPE_LONG, 
+					DATATYPE_FLOAT, 
+					DATATYPE_DOUBLE, 
+					DATATYPE_NUMBER, 
+					DATATYPE_STRING, 
+					DATATYPE_DATE // ISO-8601 Date, which is represented in a String (1970-01-01T00:00:00.000+0000)*/ 
+				}
 			)
 		);
 		
-		arrayTypes.addAll(
+		containerTypes.addAll(
 			Arrays.asList(
-				new String[]{"Array[", "List["}
+				new String[] {
+					DATATYPE_ARRAY + "[", 
+					DATATYPE_LIST + "[", 
+					DATATYPE_SET + "["}
 			)
 		);
 	}
@@ -44,10 +81,10 @@ public class SwaggerHelper {
 	
 		valueType = valueType.replaceAll(" ", "");
 		
-		if (isBasicType(valueType) || isVoidType(valueType))
+		if (isPrimitiveType(valueType) || isVoidType(valueType))
 			return null;
 			
-		if (isArrayType(valueType)) {
+		if (isContainerType(valueType)) {
 			
 			String itemType = "";
 			
@@ -57,7 +94,7 @@ public class SwaggerHelper {
 				itemType = (String) valueType.subSequence(6, valueType.length()-1);
 			}
 			
-			if (StringUtils.isBlank(itemType) || isBasicType(itemType)) {				
+			if (StringUtils.isBlank(itemType) || isPrimitiveType(itemType)) {				
 				return null;
 			}
 			else {				
@@ -91,12 +128,12 @@ public class SwaggerHelper {
 	 */
 	public static boolean isVoidType(String valueType) {
 		
-		if (valueType==null || valueType=="")
-			return true;
+		if (valueType==null)
+			return false;
 		
 		valueType = valueType.replaceAll(" ", "");
 		
-		return "void".equalsIgnoreCase(valueType) || "null".equalsIgnoreCase(valueType);
+		return DATATYPE_VOID.equalsIgnoreCase(valueType) || "null".equalsIgnoreCase(valueType);
 	}
 	
 	/**
@@ -104,13 +141,15 @@ public class SwaggerHelper {
 	 * @param valueType
 	 * @return
 	 */
-	public static boolean isBasicType(String valueType) {
+	public static boolean isPrimitiveType(String valueType) {
 		if (valueType==null)
 			return false;
 		
 		valueType = valueType.replaceAll(" ", "");
 		
-		return basicTypes.contains(valueType);
+		//TODO once a swagger annotations validator is implemeted 
+		//     the lowerCase is not necessary anymore
+		return primitiveTypes.contains(valueType.toLowerCase()); 
 	}
 
 	/**
@@ -118,12 +157,12 @@ public class SwaggerHelper {
 	 * @param valueTypeInternal
 	 * @return
 	 */
-	public static boolean isArrayType(String valueTypeInternal) {
+	public static boolean isContainerType(String valueTypeInternal) {
 		
 		if (valueTypeInternal==null)
 			return false;
 		
-		for (String type: arrayTypes) {
+		for (String type: containerTypes) {
 			if (valueTypeInternal.replaceAll(" ", "").startsWith(type)) {				
 				return true;
 			}
@@ -141,20 +180,10 @@ public class SwaggerHelper {
 		
 		Type type = null;
 		
-		if (dataType.equalsIgnoreCase("void")) {
-			type = EasyWsdlHelper.getComplexType(modelsNamespace, dataType);
-			ComplexType ctype = (ComplexType) type;
-			ctype.setSequence(ctype.createSequence());
-			
-			// add this type definition to the types section of the wsdl document
-			if (typesSchema.getType(type.getQName())==null) {
-				System.out.println("adding type " + type.getQName() + " to schema");
-				typesSchema.addType(type);
-			}
-		}
-		
-		if (dataType.equalsIgnoreCase("string")) {
+		if (dataType.equals("string")) {
 			type = EasyWsdlHelper.getSimpleType(null, "xs:string");
+		} else {
+			throw new UnsupportedOperationException("the mapping from swagger primitive type " + dataType + " to an xsd one has not been implemented yet");
 		}
 		
 		return type;

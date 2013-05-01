@@ -134,6 +134,7 @@ public class NSIgnoreJSONFormatter extends AbstractJSONMessageFormatter {
 			} else {
 				XMLStreamWriter jsonWriter = getJSONWriter(out, format);
 				
+				// TODO: implement this also for the other if branch (when there's a OMDatasource)
 				// here i've changed the implementation found in AbstractJSONFormatter
 				// to remove the container object body. e.g. { "body" : { <model> }
 				if (useBodyContainer) {					

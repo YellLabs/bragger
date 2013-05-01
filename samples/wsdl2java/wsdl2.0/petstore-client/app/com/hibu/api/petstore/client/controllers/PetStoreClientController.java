@@ -1,14 +1,18 @@
 package com.hibu.api.petstore.client.controllers;
 
+import java.rmi.RemoteException;
+
 import play.mvc.Controller;
 import play.mvc.Result;
 
 import com.hibu.apis.petstore.clients.pet.Petservice;
 import com.hibu.apis.petstore.clients.pet.PetserviceStub;
 import com.hibu.apis.petstore.clients.user.Userservice;
+import com.hibu.apis.petstore.clients.user.UserserviceError;
 import com.hibu.apis.petstore.clients.user.UserserviceStub;
 import com.hibu.apis.petstore.models.AddPetRequestType;
 import com.hibu.apis.petstore.models.Category;
+import com.hibu.apis.petstore.models.ErrorResponse;
 import com.hibu.apis.petstore.models.FindPetsByStatusRequestType;
 import com.hibu.apis.petstore.models.GetPetByIdRequestType;
 import com.hibu.apis.petstore.models.Pet;
@@ -27,7 +31,7 @@ public class PetStoreClientController extends Controller {
 
 			// instantiate the api client auto generated from the wsdl.
 			// the need for the second parameter is due to a bug in jettison 
-			Petservice petService = new AxisClientFactory().getClient(Petservice.class, PetserviceStub.class, Pet.class);
+			Petservice petService = new AxisClientFactory().getClient(Petservice.class, PetserviceStub.class, Pet.class, "petstore");
 			
 			GetPetByIdRequestType request = new GetPetByIdRequestType();
 			request.setPetId("1");
@@ -49,7 +53,7 @@ public class PetStoreClientController extends Controller {
 			
 			// instantiate the api client auto generated from the wsdl.
 			// the need for the second parameter is due to a bug in jettison
-			Petservice petService = new AxisClientFactory().getClient(Petservice.class, PetserviceStub.class, Pet.class);
+			Petservice petService = new AxisClientFactory().getClient(Petservice.class, PetserviceStub.class, Pet.class, "petstore");
 			
 			AddPetRequestType request = new AddPetRequestType();
 			
@@ -100,7 +104,7 @@ public class PetStoreClientController extends Controller {
 			
 			// instantiate the api client auto generated from the wsdl.
 			// the need for the second parameter is due to a bug in jettison
-			Petservice petService = new AxisClientFactory().getClient(Petservice.class, PetserviceStub.class, Pet.class);
+			Petservice petService = new AxisClientFactory().getClient(Petservice.class, PetserviceStub.class, Pet.class, "petstore");
 			
 			UpdatePetRequestType request = new UpdatePetRequestType();
 			
@@ -126,7 +130,7 @@ public class PetStoreClientController extends Controller {
 		String statusParam = "available";
 		
 		// instantiate the stub
-		Petservice petservice = new AxisClientFactory().getClient(Petservice.class, PetserviceStub.class, Pet.class);
+		Petservice petservice = new AxisClientFactory().getClient(Petservice.class, PetserviceStub.class, Pet.class, "petstore");
 		
 		// prepare request
 		FindPetsByStatusRequestType request = new FindPetsByStatusRequestType();
@@ -141,15 +145,16 @@ public class PetStoreClientController extends Controller {
 	// ========================================================================
 	
 	/**
+	 * @throws RemoteException 
 	 * 
 	 */
-	public static Result updateUser() throws Exception {
+	public static Result updateUser() throws RemoteException {
 		
 		try {
-			
+
 			// instantiate the api client auto generated from the wsdl.
 			// the need for the second parameter is due to a bug in jettison
-			Userservice petService = new AxisClientFactory().getClient(Userservice.class, UserserviceStub.class, User.class);
+			Userservice petService = new AxisClientFactory().getClient(Userservice.class, UserserviceStub.class, User.class, "petstore");
 			
 			UpdateUserRequestType request = new UpdateUserRequestType();
 			User inputUser = new User();
@@ -162,16 +167,23 @@ public class PetStoreClientController extends Controller {
 			inputUser.setPhone("12345");
 			inputUser.setUserStatus(2);
 
+			// TODO try with an empty body (null user) !!!!
 			request.setBody(inputUser);
+
 			request.setUsername("paolo");
 
 			petService.updateUser(request);
 			
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
+		} catch (UserserviceError e) {
+			ErrorResponse error = e.getFaultMessage();
+			return internalServerError(
+				"thrown exception of type: " + e.getClass().getName() + "<br/>" +
+				"CODE="+error.getCode() +"<br/>TYPE="+error.getType()+"<br/>MESSAGE="+error.getMessage()).as("text/html");
+			
+		} catch (InstantiationException e) {
+			return internalServerError("thrown exception: " + e.getClass().getName() + ": "+ e.getMessage());
 		}
-		
+
 		return ok("updated User");
 	}
 	
