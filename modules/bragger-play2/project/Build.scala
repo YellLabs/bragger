@@ -6,7 +6,7 @@ import com.typesafe.sbteclipse.core.EclipsePlugin._
 object ApplicationBuild extends Build {
 
 	val appName    = "bragger-play2"
-	val appVersion = "1.3.0-SNAPSHOT"
+	val appVersion = "1.3.1-SNAPSHOT"
 
 	val appDependencies = Seq(
 		"com.hibu" % "bragger-core" % appVersion exclude("com.wordnik", "swagger-core_2.9.1"),
@@ -32,8 +32,6 @@ object ApplicationBuild extends Build {
 	).dependsOn(
 		//swaggerPlay2 , 
 		braggerCore
-	).aggregate(
-		//swaggerPlay2 //, braggerCore
 	)
 
 	lazy val braggerCore = ProjectRef(file("../bragger-core"), "bragger-core")

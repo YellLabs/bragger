@@ -102,7 +102,7 @@ public class UserApiController extends BaseApiController {
 		@ApiParamImplicit(name = "body", value = "Updated user object", required = true, dataType = "models.User", paramType = "body") 
 	})
 	public static Result updateUser(String username) {
-		//throw new RuntimeException("testing faults...");
+//		throw new RuntimeException("testing faults...");
 		Object o = request().body().asJson();
 		try {
 			User user = (User) BaseApiController.mapper.readValue(o.toString(), User.class);

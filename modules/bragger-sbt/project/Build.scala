@@ -5,10 +5,10 @@ import com.typesafe.sbteclipse.core.EclipsePlugin._
 object ApplicationBuild extends Build {
 
 	val appName    = "bragger-sbt"
-	val appVersion = "1.3.0-SNAPSHOT"
+	val appVersion = "1.3.1-SNAPSHOT"
 
 	val appDependencies = Seq(
-		"com.hibu" % "bragger-core" % appVersion//, //excludeAll(ExclusionRule(organization = "javax.servlet", name = "servlet-api")),
+		"com.hibu" % "bragger-client" % appVersion//, //excludeAll(ExclusionRule(organization = "javax.servlet", name = "servlet-api")),
 		//"org.slf4j" % "slf4j-log4j12" % "1.7.5" // print logs io the sbt console (TODO configure appenders)
 	)
 	
@@ -43,9 +43,9 @@ object ApplicationBuild extends Build {
 			EclipseKeys.withSource in ThisBuild := false
 		)
 	).dependsOn(
-		//braggerCore
+		//braggerClient
 	)
 	
-	lazy val braggerCore = ProjectRef(file("../bragger-core"), "bragger-core")
+	lazy val braggerClient = ProjectRef(file("../bragger-client"), "bragger-client")
 	
 }

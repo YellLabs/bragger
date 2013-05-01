@@ -6,7 +6,7 @@ import com.typesafe.sbteclipse.core.EclipsePlugin.EclipseKeys
 object ApplicationBuild extends Build {
 
 	val appName    = "petstore-java-play2"
-	val appVersion = "1.3.0-SNAPSHOT"
+	val appVersion = "1.3.1-SNAPSHOT"
 
 	val appDependencies = Seq(
 		"com.hibu" %% "bragger-play2" % appVersion,
@@ -26,8 +26,6 @@ object ApplicationBuild extends Build {
 		
 	).dependsOn(
 	    play2Bragger
-	).aggregate(
-	    //play2Bragger
 	)
 	
 	lazy val play2Bragger = ProjectRef(file("../../modules/bragger-play2"), "bragger-play2")

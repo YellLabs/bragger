@@ -59,48 +59,6 @@ public class WSDL20gen {
 	
 	private static Logger logger = LoggerFactory.getLogger(WSDL20gen.class.getName());
 
-	private static final String ERROR_RESPONSE_TYPENAME = "errorResponse";
-	private static final String ERROR_RESPONSE_ELEMENTNAME = "genericError";
-	
-	private static final String HTTP_WWW_W3_ORG_NS_WSDL = "http://www.w3.org/ns/wsdl";
-	private static final String HTTP_WWW_W3_ORG_NS_WSDL_SOAP = "http://www.w3.org/ns/wsdl/soap";
-	private static final String HTTP_WWW_W3_ORG_NS_WSDL_HTTP = "http://www.w3.org/ns/wsdl/http";
-	private static final String HTTP_WWW_W3_ORG_NS_WSDL_EXTENSIONS = "http://www.w3.org/ns/wsdl-extensions";
-
-	private static final String BINDING_PROTOCOL_HTTP = "http";
-	private static final String WSDL20_DOCUMENT_NAME_SUFFIX = "_wsdl20_document";
-	private static final String INTERFACE_NAME_SUFFIX = "interface";
-	private static final String SERVICE_NAME_SUFFIX = "service";
-	private static final String REST_ENDPOINT_SUFFIX = "rest_endpoint";
-	private static final String REST_BINDING_SUFFIX = "rest_binding";
-	private static final String HTTP_HIBU_COM_API = "http://hibu.com/apis";
-	private static final String TYPES = "models";
-
-	/**
-	 * 
-	 * @param appName
-	 * @return
-	 */
-	public static String getModelsNamespaceUri(String appName) {
-		return HTTP_HIBU_COM_API + "/" + appName + "/" + getModelsNamespacePrefix();
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public static String getModelsNamespacePrefix() {
-		return WSDL20gen.TYPES;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public static String getErrorResponseElementName() {
-		return WSDL20gen.ERROR_RESPONSE_ELEMENTNAME;
-	}
-	
 	/**
 	 * 
 	 * @param resourceName
@@ -115,19 +73,16 @@ public class WSDL20gen {
 
 		try {
 			
-			String webServiceName = resourceName + SERVICE_NAME_SUFFIX;
-			String descriptionName = webServiceName + WSDL20_DOCUMENT_NAME_SUFFIX;
+			String webServiceName = resourceName + WSDL20GenConstants.SERVICE_NAME_SUFFIX;
+			String descriptionName = webServiceName + WSDL20GenConstants.WSDL20_DOCUMENT_NAME_SUFFIX;
 			
-			String interfaceName = webServiceName + INTERFACE_NAME_SUFFIX; 
-			String endpointName = webServiceName + REST_ENDPOINT_SUFFIX;
-			String restHttpBindingName = interfaceName + REST_BINDING_SUFFIX;
+			String interfaceName = webServiceName + WSDL20GenConstants.INTERFACE_NAME_SUFFIX; 
+			String endpointName = webServiceName + WSDL20GenConstants.REST_ENDPOINT_SUFFIX;
+			String restHttpBindingName = interfaceName + WSDL20GenConstants.REST_BINDING_SUFFIX;
 
-			// this name space becomes the package for the generated stub and interface
-			String mainServiceNamespace =  HTTP_HIBU_COM_API + "/" + appName + "/" + webServiceName;
+			String targetNamespace = WSDL20GenConstants.getTargetNamespaceUri(appName, webServiceName);
 			
-			String targetNamespace = mainServiceNamespace + "/wsdl";
-			
-			String bindingProtocolHttp = BINDING_PROTOCOL_HTTP;
+			String bindingProtocolHttp = WSDL20GenConstants.BINDING_PROTOCOL_HTTP;
 	
 			// ----- global infos
 			WSDLFactory wsdlFactory = WSDLFactory.newInstance();
@@ -141,7 +96,7 @@ public class WSDL20gen {
 			
 			// first schema is only to include the types generated via JAXB from models
 			Schema modelsSchema = types.createSchema();
-			modelsSchema.setTargetNamespace(getModelsNamespaceUri(appName));
+			modelsSchema.setTargetNamespace(WSDL20GenConstants.getModelsNamespaceUri(appName));
 			Include includeDef = modelsSchema.createInclude();
 			includeDef.setLocationURI(new URI(resourceDoc.getBasePath() + xsdUrl));
 			modelsSchema.addInclude(includeDef);
@@ -186,18 +141,18 @@ public class WSDL20gen {
 					for (DocumentationOperation operation : api.getOperations()) {
 							
 							// abstract part: interface operations
-							Operation wsdlAbstractOperation = WSDL20gen.getWSDLInterfaceOperation(itf, service, operation, modelsSchema, appName);
+							Operation wsdlAbstractOperation = getWSDLInterfaceOperation(itf, service, operation, modelsSchema, appName);
 							itf.addOperation(wsdlAbstractOperation);
 							
 							// concrete part: binding operations
-							BindingOperationImpl bindingOperation = WSDL20gen.getWSDLBindingOperation(api.getPath(), service, binding, wsdlAbstractOperation, operation);
+							BindingOperationImpl bindingOperation = getWSDLBindingOperation(api.getPath(), service, binding, wsdlAbstractOperation, operation);
 														
 							binding.addBindingOperation(bindingOperation);
 					}}
 			}}
 			
 			// ----- writing wsdl
-			String wsdlAsString = WSDL20gen.getWSDLDocumentAsString(appName, desc20);
+			String wsdlAsString = getWSDLDocumentAsString(appName, desc20);
 			
 			return wsdlAsString;
 		
@@ -221,12 +176,12 @@ public class WSDL20gen {
 			WSDLWriterImpl writer = new CustomWSDL20Writer();
 			
 			writer.useCustomNamespacesPrefixes(new String[] { 
-					"wsdl" , HTTP_WWW_W3_ORG_NS_WSDL, 
-					"wsdl-ext", HTTP_WWW_W3_ORG_NS_WSDL_EXTENSIONS,
-					"wsdl-http", HTTP_WWW_W3_ORG_NS_WSDL_HTTP,
-					"wsdl-soap", HTTP_WWW_W3_ORG_NS_WSDL_SOAP ,
+					"wsdl" , WSDL20GenConstants.HTTP_WWW_W3_ORG_NS_WSDL, 
+					"wsdl-ext", WSDL20GenConstants.HTTP_WWW_W3_ORG_NS_WSDL_EXTENSIONS,
+					"wsdl-http", WSDL20GenConstants.HTTP_WWW_W3_ORG_NS_WSDL_HTTP,
+					"wsdl-soap", WSDL20GenConstants.HTTP_WWW_W3_ORG_NS_WSDL_SOAP ,
 					"tns", desc20.getTargetNamespace() ,
-					TYPES, getModelsNamespaceUri(appName)
+					WSDL20GenConstants.getModelsNamespacePrefix(), WSDL20GenConstants.getModelsNamespaceUri(appName)
 			});
 			
 			Document outDoc = writer.getDocument(desc20);
@@ -258,7 +213,7 @@ public class WSDL20gen {
 	private static Operation getWSDLInterfaceOperation(InterfaceType itf, Service service, DocumentationOperation operation, Schema typesSchema, String appName) throws WSDLException {
 		
 		String targetNamespace = itf.getQName().getNamespaceURI();
-		String modelsNamespace = getModelsNamespaceUri(appName);
+		String modelsNamespace = WSDL20GenConstants.getModelsNamespaceUri(appName);
 		
 		Operation wsdlAbstractOperation = itf.createOperation();
 		wsdlAbstractOperation.setQName(new QName(targetNamespace, operation.getNickname()));
@@ -271,7 +226,7 @@ public class WSDL20gen {
 		try {
 			// pattern is always in/out for REST services (http://www.ibm.com/developerworks/webservices/library/ws-restwsdl/)
 			wsdlAbstractOperation.getOtherAttributes().put(new QName("pattern"), MEPPatternConstants.IN_OUT.value().toString());
-			wsdlAbstractOperation.getOtherAttributes().put(new QName(HTTP_WWW_W3_ORG_NS_WSDL_EXTENSIONS, "safe"), String.valueOf(operation.getHttpMethod().equalsIgnoreCase("get"))); // true if op is idempotent
+			wsdlAbstractOperation.getOtherAttributes().put(new QName(WSDL20GenConstants.HTTP_WWW_W3_ORG_NS_WSDL_EXTENSIONS, "safe"), String.valueOf(operation.getHttpMethod().equalsIgnoreCase("get"))); // true if op is idempotent
 		} catch (XmlException e) {
 			e.printStackTrace();
 			throw new WSDLException(e);
@@ -317,7 +272,7 @@ public class WSDL20gen {
 		InterfaceTypeImpl itfImpl = (InterfaceTypeImpl) itf;
 		InterfaceFaultType itfFault = new ObjectFactory().createInterfaceFaultType();
 		itfFault.setName(service.getQName().getLocalPart() + "Error");
-		itfFault.setElement(WSDL20gen.getModelsNamespacePrefix() + ":" + WSDL20gen.ERROR_RESPONSE_ELEMENTNAME);
+		itfFault.setElement(WSDL20GenConstants.getModelsNamespacePrefix() + ":" + WSDL20GenConstants.ERROR_RESPONSE_ELEMENTNAME);
 		
 		JAXBElement<InterfaceFaultType> jaxbFault = new JAXBElement<InterfaceFaultType>(new QName("http://www.w3.org/ns/wsdl", "fault"), InterfaceFaultType.class, InterfaceType.class, itfFault);
 		itfImpl.getModel().getOperationOrFaultOrAny().add(jaxbFault);
@@ -404,7 +359,7 @@ public class WSDL20gen {
 		
 		// set name attribute
 		// FIXME the namespace prefix should be added from the parameter modelNamespace
-		requestMessageElement.setQName(new QName(modelsNamespace,  WSDL20gen.TYPES + ":" + operation.getNickname() + "_request"));
+		requestMessageElement.setQName(new QName(modelsNamespace, WSDL20GenConstants.getModelsNamespacePrefix() + ":" + operation.getNickname() + "_request"));
 
 		ComplexType requestMessageType = EasyWsdlHelper.getComplexType(modelsNamespace, operation.getNickname() + "_request_type");
 		requestMessageType.setSequence(requestMessageType.createSequence());
@@ -517,13 +472,13 @@ public class WSDL20gen {
 		Element responseMessageElement = typesSchema.createElement();
 
 		// set name attribute
-		responseMessageElement.setQName(new QName(modelsNamespace, WSDL20gen.TYPES + ":" + operation.getNickname() + "_response"));
+		responseMessageElement.setQName(new QName(modelsNamespace, WSDL20GenConstants.getModelsNamespacePrefix() + ":" + operation.getNickname() + "_response"));
 
 		// set type attribute
 		String responseClass = operation.getResponseClass();
 		if (SwaggerSpecs11.isVoidType(responseClass)) {
 
-			Type type = SwaggerSpecs11.mapVoidDataType("EmptyResponse", modelsNamespace, typesSchema);
+			Type type = SwaggerSpecs11.mapVoidDataType(WSDL20GenConstants.EMPTY_RESPONSE_TYPENAME, modelsNamespace, typesSchema);
 			responseMessageElement.setType(type);
 			
 		} else if (SwaggerSpecs11.isPrimitiveType(responseClass)) {
@@ -580,7 +535,7 @@ public class WSDL20gen {
 	
 	private static void createGenericError(Schema typesSchema, String appName) {
 		
-		ComplexType internalServerErrorType = EasyWsdlHelper.getComplexType(getModelsNamespaceUri(appName), ERROR_RESPONSE_TYPENAME);
+		ComplexType internalServerErrorType = EasyWsdlHelper.getComplexType(WSDL20GenConstants.getModelsNamespaceUri(appName), WSDL20GenConstants.ERROR_RESPONSE_TYPENAME);
 		Sequence sequence = internalServerErrorType.createSequence();
 		internalServerErrorType.setSequence(sequence);
 		
@@ -607,7 +562,7 @@ public class WSDL20gen {
 		
 		Element internalServerErrorElement = typesSchema.createElement();
 		internalServerErrorElement.setType(internalServerErrorType);
-		internalServerErrorElement.setQName(new QName(WSDL20gen.ERROR_RESPONSE_ELEMENTNAME));
+		internalServerErrorElement.setQName(new QName(WSDL20GenConstants.ERROR_RESPONSE_ELEMENTNAME));
 		
 		// add element to schema
 		if (typesSchema.getElement(internalServerErrorElement.getQName())==null) {

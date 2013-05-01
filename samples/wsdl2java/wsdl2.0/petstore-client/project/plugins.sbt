@@ -15,5 +15,5 @@ resolvers ++= Seq(
 	"petalslink" at "http://maven.petalslink.com/public"
 )
 
-addSbtPlugin("com.hibu" % "bragger-sbt" % "1.3.0-SNAPSHOT")
+addSbtPlugin("com.hibu" % "bragger-sbt" % "1.3.1-SNAPSHOT")
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

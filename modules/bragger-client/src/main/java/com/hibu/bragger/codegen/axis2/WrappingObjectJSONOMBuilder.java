@@ -21,7 +21,7 @@ import org.apache.axis2.json.AbstractJSONDataSource;
 import org.apache.axis2.json.AbstractJSONOMBuilder;
 import org.apache.axis2.transport.http.util.URIEncoderDecoder;
 
-import com.hibu.bragger.wsdl.WSDL20gen;
+import com.hibu.bragger.wsdl.WSDL20GenConstants;
 
 /**
  * This is like JSONOMBuilder but it supports RESTful api methods whose response is not wrapped in a container object.
@@ -68,7 +68,7 @@ public class WrappingObjectJSONOMBuilder extends AbstractJSONOMBuilder {
     		return new WrappingObjectJSONDatasource(jsonReader, "\"" + localName + "\"", jsonResponseWrappedInAContainer);
     	} else {
     		Map<String, String> map = new HashMap<String, String>();
-    		map.put(WSDL20gen.getModelsNamespaceUri(serviceName), WSDL20gen.getModelsNamespacePrefix());
+    		map.put(WSDL20GenConstants.getModelsNamespaceUri(serviceName), WSDL20GenConstants.getModelsNamespacePrefix());
     		return new WrappingObjectJSONDatasource(jsonReader, "\"" + prefix + "." + localName + "\"", jsonResponseWrappedInAContainer, map);
     	}
     }
@@ -166,9 +166,9 @@ public class WrappingObjectJSONOMBuilder extends AbstractJSONOMBuilder {
 				}
 			} else {
 				if (messageContext.isProcessingFault()) {
-					ns = factory.createOMNamespace(WSDL20gen.getModelsNamespaceUri(serviceName), WSDL20gen.getModelsNamespacePrefix());
-					prefix = WSDL20gen.getModelsNamespacePrefix();
-					localName = WSDL20gen.getErrorResponseElementName();
+					ns = factory.createOMNamespace(WSDL20GenConstants.getModelsNamespaceUri(serviceName), WSDL20GenConstants.getModelsNamespacePrefix());
+					prefix = WSDL20GenConstants.getModelsNamespacePrefix();
+					localName = WSDL20GenConstants.getErrorResponseElementName();
 				}
 				else {					
 					localName = resourceName;

@@ -7,10 +7,10 @@ import com.hibu.bragger.sbt.BraggerSbtPlugin.BraggerKeys._
 object ApplicationBuild extends Build {
 
 	val appName    = "petstore-client"
-	val appVersion = "1.3.0-SNAPSHOT"
+	val appVersion = "1.3.1-SNAPSHOT"
 	
 	val appDependencies = Seq(
-		"com.hibu" % "bragger-core" % appVersion, 
+		"com.hibu" % "bragger-client" % appVersion, 
 		javaCore
 	)
 	
@@ -37,11 +37,11 @@ object ApplicationBuild extends Build {
 		EclipseKeys.withSource in ThisBuild := false
 		
 	).dependsOn(
-		braggerCore
+		braggerClient
 	).aggregate(
-		//braggerCore
+		//braggerClient
 	)
 	
-	lazy val braggerCore = ProjectRef(file("../../../../modules/bragger-core"), "bragger-core")
+	lazy val braggerClient = ProjectRef(file("../../../../modules/bragger-client"), "bragger-client")
 	
 }

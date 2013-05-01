@@ -1,0 +1,17 @@
+
+# eclipse files
+project/target/
+target/
+.classpath
+.project
+
+# compile python files
+fabfile.pyc
+
+# fabric templates
+build.sbt
+publish_credentials
+
+
+
+

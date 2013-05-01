@@ -1,4 +1,4 @@
-build.sbt.hibu
+hibu.sbt
 modules/play-bragger/conf/private/
 publish_credentials
 fabfile.pyc
