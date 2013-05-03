@@ -15,8 +15,6 @@ import java.io.File;
  * on the build system (sbt, maven) so that they can be reused across different build systems.
  * It should depend only on the framework used to generate the api client code (e.g. Axis2 wsdl2gen)
  * 
- * TODO this interface should be moved out of the sbt plugin to stay in a stand alone package, like bragger-clientgen (bragger-core may be ok as well)
- * And both the sbt/mavn-plugin modules and the interface implementation modules (e.g. bragger-clientgen-axis2 ) would depend on it.
  * 
  * @author paolo
  * 

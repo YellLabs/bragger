@@ -20,7 +20,7 @@ public class ReflectionUtils {
 	 * this method scans tail-recursively the list of classes provided
 	 * and returns the names of the non scalar fields, like arrays, Iterables, enums. 
 	 * 
-	 * TODO name clashes.
+	 * TODO what about name clashes??
 	 * If one of the classes C1 has a non-array element called "elem1" 
 	 * and another class C2 has a list called "elem1", 
 	 * then C1.elem1 would be rendered as an array which would be wrong!!
@@ -67,9 +67,9 @@ public class ReflectionUtils {
 						findArraysOfPrimitivesTailRecursive(accumulator, genericType);
 					}
 				}
-				// enums, TODO implement
+				// enums
 				else if (type.isEnum()) {
-				
+					// TODO implement				
 				}
 				// non String objects
 				else if (!type.isPrimitive() && !String.class.isAssignableFrom(type)) {

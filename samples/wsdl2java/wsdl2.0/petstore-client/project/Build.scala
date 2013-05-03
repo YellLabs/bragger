@@ -38,8 +38,6 @@ object ApplicationBuild extends Build {
 		
 	).dependsOn(
 		braggerClient
-	).aggregate(
-		//braggerClient
 	)
 	
 	lazy val braggerClient = ProjectRef(file("../../../../modules/bragger-client"), "bragger-client")

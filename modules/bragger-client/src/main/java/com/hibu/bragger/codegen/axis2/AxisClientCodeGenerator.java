@@ -17,7 +17,6 @@ import com.hibu.bragger.codegen.ClientGenerator;
 /**
  * this class but in general all the implementations of the ClientGenerator interface 
  * should be written to be reused in other plugins for build systems like maven
- * (maybe in maven there's already an axis wsdl2java plugin!! TODO find out!) 
  * 
  * @author paolo
  *
