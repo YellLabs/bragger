@@ -111,9 +111,7 @@ public class WSDL20gen {
 			});
 			
 			Document outDoc = writer.getDocument(desc20);
-			
-			// TODO validate against latest schema at http://www.w3.org/2007/06/wsdl/wsdl20.xsd
-			
+						
 			return XMLPrettyPrinter.prettyPrint(outDoc, "utf8");
 			
 		} catch (WSDLException e) {
@@ -223,6 +221,8 @@ public class WSDL20gen {
 			
 			// ----- writing wsdl
 			String wsdlAsString = getWSDLDocumentAsString(appName, desc20);
+			
+			// ----- TODO validate against latest schema at http://www.w3.org/2007/06/wsdl/wsdl20.xsd			
 			
 			return wsdlAsString;
 		

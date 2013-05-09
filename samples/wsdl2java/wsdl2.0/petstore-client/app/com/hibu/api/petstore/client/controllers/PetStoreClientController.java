@@ -1,5 +1,6 @@
 package com.hibu.api.petstore.client.controllers;
 
+import java.net.URL;
 import java.rmi.RemoteException;
 
 import play.mvc.Controller;
@@ -22,6 +23,7 @@ import com.hibu.apis.petstore.models.UpdatePetRequestType;
 import com.hibu.apis.petstore.models.UpdateUserRequestType;
 import com.hibu.apis.petstore.models.User;
 import com.hibu.bragger.codegen.axis2.AxisClientFactory;
+import com.hibu.bragger.wsdl.Wsdl20Validator;
 
 public class PetStoreClientController extends Controller {
 	
@@ -187,4 +189,15 @@ public class PetStoreClientController extends Controller {
 		return ok("updated User");
 	}
 	
+	// ========================================================================
+	
+	public static Result validateWsdl(String resourceName) {
+		try {			
+			Wsdl20Validator validator = new Wsdl20Validator(new URL("http://localhost:9000/docs/api-docs.wsdl/" + resourceName));
+			return ok("validation result:" + validator.isValid());
+		} catch (Exception e) {
+			return internalServerError(e.getMessage());
+		}
+	}
+
 }

@@ -7,3 +7,5 @@ GET /findPetsByStatus               com.hibu.api.petstore.client.controllers.Pet
 # resource USER
 GET /updateUser                     com.hibu.api.petstore.client.controllers.PetStoreClientController.updateUser()
 
+# validate wsdl
+GET /validate/:resourceName         com.hibu.api.petstore.client.controllers.PetStoreClientController.validateWsdl(resourceName)

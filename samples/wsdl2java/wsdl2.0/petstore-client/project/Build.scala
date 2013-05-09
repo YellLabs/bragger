@@ -24,7 +24,7 @@ object ApplicationBuild extends Build {
 			Api("http://localhost:9000/docs/api-docs.wsdl/store", "com.hibu.apis.petstore.clients.store")
 		),
 		
-		sourceGenerators in Test <+= braggerGenerate in Compile,
+		//sourceGenerators in Test <+= braggerGenerate in Compile,
 
 		// bragger repo
 		resolvers in ThisBuild += "github pages repo" at "http://yelllabs.github.com/bragger",
@@ -34,7 +34,7 @@ object ApplicationBuild extends Build {
 		// sbt eclipse
 		//EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Managed,
 		EclipseKeys.skipParents in ThisBuild := false,
-		EclipseKeys.withSource in ThisBuild := false
+		EclipseKeys.withSource in ThisBuild := true
 		
 	).dependsOn(
 		braggerClient
