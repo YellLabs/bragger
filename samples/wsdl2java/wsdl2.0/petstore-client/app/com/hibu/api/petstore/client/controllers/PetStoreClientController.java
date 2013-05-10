@@ -23,7 +23,7 @@ import com.hibu.apis.petstore.models.UpdatePetRequestType;
 import com.hibu.apis.petstore.models.UpdateUserRequestType;
 import com.hibu.apis.petstore.models.User;
 import com.hibu.bragger.codegen.axis2.AxisClientFactory;
-import com.hibu.bragger.wsdl.Wsdl20Validator;
+import com.hibu.bragger.utils.Wsdl20Validator;
 
 public class PetStoreClientController extends Controller {
 	

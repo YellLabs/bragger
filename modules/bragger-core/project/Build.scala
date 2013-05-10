@@ -12,10 +12,16 @@ object ApplicationBuild extends Build {
 	lazy val root = Project(id = appName, 
 		base = file("."),
 		settings = Project.defaultSettings ++ Seq(
+		    
 			libraryDependencies ++= Seq(
-        		"commons-io" % "commons-io" % "2.4",
-        		"org.slf4j" % "slf4j-api" % "1.7.2",
-				"com.hibu" % "bragger-commons" % appVersion
+				"com.hibu" % "bragger-commons" % appVersion,
+				"com.wordnik" % "swagger-core_2.9.1" % "1.2.2-SNAPSHOT" excludeAll(
+				    ExclusionRule(organization = "javax.servlet", name = "servlet-api")
+				),
+				"org.ow2.easywsdl" % "easywsdl-tool-java2wsdl" % "2.3" excludeAll(
+				    ExclusionRule(organization = "javax.servlet", name = "servlet-api")
+				),
+				"com.ebmwebsourcing.easycommons" % "easycommons.xml" % "1.1" // even though it's required for easywsdl-wsdl to function, it's not part of its dependency tree
 			),
 			
 			organization in ThisBuild := "com.hibu",
@@ -44,9 +50,9 @@ object ApplicationBuild extends Build {
 			
 		)
 	).dependsOn(
-	    braggerCommons
+	    //braggerCommons
 	)
 	
-	lazy val braggerCommons = ProjectRef(file("../bragger-commons"), "bragger-commons")
+	//lazy val braggerCommons = ProjectRef(file("../bragger-commons"), "bragger-commons")
 
 }

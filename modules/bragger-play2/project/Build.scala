@@ -31,10 +31,10 @@ object ApplicationBuild extends Build {
 	
 	).dependsOn(
 		//swaggerPlay2 , 
-		braggerCore
+		//braggerCore
 	)
 
-	lazy val braggerCore = ProjectRef(file("../bragger-core"), "bragger-core")
+	//lazy val braggerCore = ProjectRef(file("../bragger-core"), "bragger-core")
 	
-	lazy val swaggerPlay2 = ProjectRef(file("../../../swagger-core/modules/swagger-play2"), "swagger-play2")
+	//lazy val swaggerPlay2 = ProjectRef(file("../../../swagger-core/modules/swagger-play2"), "swagger-play2")
 }

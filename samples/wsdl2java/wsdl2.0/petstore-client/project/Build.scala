@@ -37,9 +37,9 @@ object ApplicationBuild extends Build {
 		EclipseKeys.withSource in ThisBuild := true
 		
 	).dependsOn(
-		braggerClient
+		//braggerClient
 	)
 	
-	lazy val braggerClient = ProjectRef(file("../../../../modules/bragger-client"), "bragger-client")
+	//lazy val braggerClient = ProjectRef(file("../../../../modules/bragger-client"), "bragger-client")
 	
 }

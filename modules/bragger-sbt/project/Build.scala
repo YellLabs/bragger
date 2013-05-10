@@ -9,7 +9,6 @@ object ApplicationBuild extends Build {
 
 	val appDependencies = Seq(
 		"com.hibu" % "bragger-client" % appVersion//, //excludeAll(ExclusionRule(organization = "javax.servlet", name = "servlet-api")),
-		//"org.slf4j" % "slf4j-log4j12" % "1.7.5" // print logs io the sbt console (TODO configure appenders)
 	)
 	
 	lazy val root = Project(
@@ -46,6 +45,6 @@ object ApplicationBuild extends Build {
 		//braggerClient
 	)
 	
-	lazy val braggerClient = ProjectRef(file("../bragger-client"), "bragger-client")
+	//lazy val braggerClient = ProjectRef(file("../bragger-client"), "bragger-client")
 	
 }

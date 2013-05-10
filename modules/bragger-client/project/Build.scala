@@ -12,12 +12,10 @@ object ApplicationBuild extends Build {
 	lazy val root = Project(id = appName, 
 		base = file("."),
 		settings = Project.defaultSettings ++ Seq(
+		    
 			libraryDependencies ++= Seq(
-	            // ====== commons ======
-        		"commons-io" % "commons-io" % "2.4",
-        		//"javax.mail" % "mail" % "1.4",
-        		"org.slf4j" % "slf4j-api" % "1.7.2",
-        		
+				"com.hibu" % "bragger-commons" % appVersion,
+			    
 				// ====== dependencies to use the client stubs auto generated form wsdl ======
         		"axis" % "axis-wsdl4j" % "1.5.1" excludeAll(
 				    ExclusionRule(organization = "javax.servlet", name = "servlet-api")
@@ -41,20 +39,7 @@ object ApplicationBuild extends Build {
         		// see http://markmail.org/message/cu2tw43qnrqgqgwp
         		// see http://dktiwari-hbti.blogspot.co.uk/2012/07/java-web-services.html
         		"org.codehaus.jettison" % "jettison" % "1.3.3.hibu",
-        		"backport-util-concurrent" % "backport-util-concurrent" % "3.1",
-        		
-				// ====== easy-wsdl libs ======
-				"org.ow2.easywsdl" % "easywsdl-tool-java2wsdl" % "2.3" excludeAll(
-				    ExclusionRule(organization = "javax.servlet", name = "servlet-api")
-				),
-				"com.ebmwebsourcing.easycommons" % "easycommons.xml" % "1.1", // even though it's required for easywsdl-wsdl to function, it's not part of its dependency tree
-				
-				// ====== swagger ======
-				"com.wordnik" % "swagger-core_2.9.1" % "1.2.2-SNAPSHOT" excludeAll(
-				    ExclusionRule(organization = "javax.servlet", name = "servlet-api")
-				),
-				
-				"com.hibu" % "bragger-commons" % appVersion
+        		"backport-util-concurrent" % "backport-util-concurrent" % "3.1"
 			),
 			
 			organization in ThisBuild := "com.hibu",

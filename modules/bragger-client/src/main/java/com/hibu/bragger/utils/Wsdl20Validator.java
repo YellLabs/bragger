@@ -1,4 +1,4 @@
-package com.hibu.bragger.wsdl;
+package com.hibu.bragger.utils;
 
 import java.io.StringBufferInputStream;
 import java.net.URI;

@@ -27,7 +27,7 @@ public class UserApiController extends BaseApiController {
 		notes = "This can only be done by the logged in user."
 	)
 	@ApiParamsImplicit(
-		@ApiParamImplicit(name = "body", value = "Created user object", required = true, dataType = "models.User", paramType = "body")
+		@ApiParamImplicit(value = "Created user object", required = true, dataType = "models.User", paramType = "body")
 	)
 	public static Result createUser() {
 		Object o = request().body().asJson();
@@ -48,7 +48,7 @@ public class UserApiController extends BaseApiController {
 		responseClass = "void"
 	)
 	@ApiParamsImplicit(
-		@ApiParamImplicit(name = "body", value = "List of user object", required = true, dataType = "Array[models.User]", paramType = "body")
+		@ApiParamImplicit(value = "List of user object", required = true, dataType = "Array[models.User]", paramType = "body")
 	)
 	public static Result createUsersWithArrayInput() {
 		Object o = request().body().asJson();
@@ -71,7 +71,7 @@ public class UserApiController extends BaseApiController {
 		responseClass = "void"
 	)
 	@ApiParamsImplicit(
-		@ApiParamImplicit(name = "body", value = "List of user object", required = true, dataType = "List[models.User]", paramType = "body")
+		@ApiParamImplicit(value = "List of user object", required = true, dataType = "List[models.User]", paramType = "body")
 	)
 	public static Result createUsersWithListInput() {
 		Object o = request().body().asJson();
@@ -90,16 +90,16 @@ public class UserApiController extends BaseApiController {
 
 
 	@ApiOperation(
-		value = "Fetch a user", 
+		value = "Upsert a user", 
 		notes = "This can only be done by the logged in user."
 	)
 	@ApiErrors({ 
-		@ApiError(code = 400, reason = "Invalid username supplied"),
+		@ApiError(code = 400, reason = "Invalid user supplied"),
 		@ApiError(code = 404, reason = "User not found") 
 	})
 	@ApiParamsImplicit({
 		@ApiParamImplicit(name = "username", value = "name that need to be updated", required = true, dataType = "string", paramType = "path"),
-		@ApiParamImplicit(name = "body", value = "Updated user object", required = true, dataType = "models.User", paramType = "body") 
+		@ApiParamImplicit(value = "Updated user object", required = true, dataType = "models.User", paramType = "body") 
 	})
 	public static Result updateUser(String username) {
 //		throw new RuntimeException("testing faults...");
@@ -125,7 +125,8 @@ public class UserApiController extends BaseApiController {
 		@ApiError(code = 404, reason = "User not found") 
 	})
 	public static Result deleteUser(
-			@ApiParam(value = "The name that needs to be deleted", required = true) String username) {
+		@ApiParam(value = "The name that needs to be deleted", required = true) @PathParam("username") String username) 
+	{
 		UserData.removeUser(username);
 		return ok();
 	}
@@ -141,7 +142,8 @@ public class UserApiController extends BaseApiController {
 		@ApiError(code = 404, reason = "User not found") 
 	})
 	public static Result getUserByName(
-			@ApiParam(value = "The name that needs to be fetched. Use user1 for testing. ", required = true) @PathParam("username") String username) {
+		@ApiParam(value = "The name that needs to be fetched. Use user1 for testing. ", required = true) @PathParam("username") String username) 
+	{
 		User user = UserData.findUserByName(username);
 		if (user != null)
 			return JsonResponse(user);

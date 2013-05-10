@@ -7,7 +7,6 @@ import play.mvc.Result;
 
 import com.hibu.bragger.swagger.SwaggerPlay2Helper;
 import com.hibu.bragger.wsdl.WSDL20gen;
-import com.hibu.bragger.wsdl.Wsdl20Validator;
 import com.hibu.bragger.xsd.ModelsXSDGenerator;
 import com.wordnik.swagger.core.Documentation;
 
@@ -64,12 +63,6 @@ public class BraggerController extends Controller {
 			
 			String wsdlAsString = WSDL20gen.generateWSDL20(appName, resourceName, resourceDoc, xsdUrl);
 			
-//			Wsdl20Validator validator = new Wsdl20Validator(wsdlAsString);
-//			FIXME: always invalid
-//			if (!validator.isValid()) {
-//				Logger.error("the generated wsdl is not valid");
-//			}
-			
 			return ok(wsdlAsString).as("text/xml");
 		
 		} catch (IllegalArgumentException e) {
@@ -82,6 +75,7 @@ public class BraggerController extends Controller {
 		}
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private static String models(Class[] modelClasses) {
 		String models = "";
 		
