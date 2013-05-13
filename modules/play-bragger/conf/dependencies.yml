@@ -5,7 +5,7 @@ require:
     - com.hibu -> bragger-core 1.3.1-SNAPSHOT
     - com.wordnik -> swagger-core_2.9.1 1.2.2-SNAPSHOT
     - com.wordnik -> swagger-annotations_2.9.1 1.2.2-SNAPSHOT
-    - com/wordnik -> swagger-play_2.9.1 0.1.hibu2:
+    - com/wordnik -> swagger-play_2.9.1 0.1.hibu3:
         id: test
 
     # can't download automatically the transitive deps of bragger-core
@@ -39,7 +39,7 @@ repositories:
                 artifact:   http://yelllabs.github.com/bragger/com/wordnik/[module]/[revision]/[module]-[revision].zip
                 descriptor: http://yelllabs.github.com/bragger/com/wordnik/[module]/[revision]/[module]-[revision]-dependencies.yml
         contains:
-            - com/wordnik -> swagger-play_2.9.1 0.1.hibu2
+            - com/wordnik -> swagger-play_2.9.1 0.1.hibu3
             
     - comWordnikJarsGithubRepo:
         type:       http
