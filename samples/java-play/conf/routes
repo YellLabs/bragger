@@ -2,15 +2,15 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /api-docs.wsdl/{resourceName}         controllers.bragger.BraggerController.getWSDL
-GET     /api-docs.xsd                         controllers.bragger.BraggerController.getXSD
+# Home page
+GET     /                                       Application.index
 
 # Pet Resource JSON API
+GET     /pet.json/findByStatus                  PetController.findPetsByStatus
+GET     /pet.json/findByTags                    PetController.findPetsByTags
 GET     /pet.json/{petId}                       PetController.getPetById
 POST    /pet.json                               PetController.addPet
 PUT     /pet.json                               PetController.updatePet
-GET     /pet.json/findByStatus                  PetController.findPetsByStatus
-GET     /pet.json/findByTags                    PetController.findPetsByTags
 
 # Pet Resource XML API
 GET     /pet.xml/{petId}                        PetController.getPetById
@@ -45,13 +45,17 @@ GET     /user.xml/{username}                    UserController.getUserByName
 GET     /user.xml/login                         UserController.loginUser
 GET     /user.xml/logout                        UserController.logoutUser
 
-# Ignore favicon requests
-GET     /favicon.ico                            404
+# bragger-play module routes
+GET     /api-docs.wsdl/{resourceName}           controllers.bragger.BraggerController.getWSDL
+GET     /api-docs.xsd                           controllers.bragger.BraggerController.getXSD
 
 # Map static resources from the /app/public folder to the /public path
 GET     /public/                                staticDir:public
-
-# Home page
-GET     /                                       Application.index
 GET     /swagger-ui/                            staticDir:public/swagger-ui-1.1.7
+
+# Ignore favicon requests
+GET     /favicon.ico                            404
+
+
+
 

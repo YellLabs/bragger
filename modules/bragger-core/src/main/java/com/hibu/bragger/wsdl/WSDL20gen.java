@@ -330,7 +330,7 @@ public class WSDL20gen {
 		Element requestMessageElement = typesSchema.createElement();
 		
 		// set name attribute
-		// TODO the namespace prefix should be added from the parameter modelNamespace
+		// TODO the name space prefix should be added from the parameter modelNamespace
 		requestMessageElement.setQName(new QName(modelsNamespaceUri, WSDL20GenConstants.getModelsNamespacePrefix() + ":" + operation.getNickname() + _REQUEST));
 		
 		ComplexType requestMessageType = EasyWsdlHelper.getComplexType(modelsNamespaceUri, operation.getNickname() + _REQUEST_TYPE);
@@ -349,6 +349,12 @@ public class WSDL20gen {
 				System.out.println("docParam.getParamType():" + docParam.getParamType());
 				System.out.println();
 
+				if ( ("query".equals(docParam.getParamType()) || "path".equals(docParam.getParamType())) && docParam.getName()==null) {
+					String message = "Invalid swagger api specification. " +
+						"A query/path parameter in the operation " + operation.getNickname() + " has got no name";
+					throw new IllegalStateException(message);
+				}
+				
 				// NAME
 				if ("body".equals(docParam.getParamType())) { 
 					paramElement.setQName(new QName(targetNamespaceUri, "body"));

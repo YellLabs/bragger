@@ -11,28 +11,23 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import play.Logger;
+import play.Play;
 
 import play.modules.swagger.ApiHelpInventory;
 import play.modules.swagger.PlayApiReader;
+
 import com.wordnik.swagger.core.Documentation;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.hibu.bragger.swagger.SwaggerSpecs11;
 import com.wordnik.swagger.core.DocumentationEndPoint;
 import com.wordnik.swagger.core.DocumentationOperation;
 import com.wordnik.swagger.core.DocumentationParameter;
 import com.wordnik.swagger.core.util.JsonUtil;
 
 public class SwaggerHelper {
-	
-	private static Logger logger = LoggerFactory.getLogger(SwaggerHelper.class.getName());
-	
-	public static Set<String> basicTypes = new HashSet<String>();
-	
-	static {
-		basicTypes.addAll(Arrays.asList(new String[]{"string", "String", "number", "int", "boolean", "object", "Array", "void", "null", "any"}));		
-	}
 	
 	/**
 	 * 
@@ -41,7 +36,8 @@ public class SwaggerHelper {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	public static Map<String, Documentation> readApiDocs() throws JsonParseException, JsonMappingException, IOException {
+	public static Map<String, Documentation> readApiDocs() 
+			throws JsonParseException, JsonMappingException, IOException {
 		
 		// result
 		Map<String, Documentation> docsMap = new HashMap<String, Documentation>();
@@ -52,6 +48,8 @@ public class SwaggerHelper {
 			
 			String resourceName = extractResourceName(resourcePath);
 			if (resourceName!=null) {
+				
+				String swaggerMainUrl ="";
 				
 				String json = ApiHelpInventory.getPathHelpJson("/"+resourceName);
 				if (json!=null && !json.isEmpty() && controllerClasses.get(resourceName)!=null) {
@@ -82,38 +80,46 @@ public class SwaggerHelper {
 		// used a set initially to remove duplicates 
 		Set<Class> modelClassesSet = new HashSet<Class>();
 		
-		for (Class controllerClass : getApiControllers().values()) {
+		Collection<Class> controllersClasses = getApiControllers().values();
+		
+		if (controllersClasses!=null) {
+		for (Class controllerClass : controllersClasses) {
 			
+			// this is used to get the internalType of the responseClasses
 			Documentation typedResourceDoc = PlayApiReader.read(controllerClass, null, null, null, null);
 
+			if (typedResourceDoc.getApis()!=null) {
 			for (DocumentationEndPoint api : typedResourceDoc.getApis()) {
-				for (DocumentationOperation operation : api.getOperations()) {
+				
+				if (api.getOperations()!=null) {
+				for (DocumentationOperation operation : api.getOperations()) {	
 					
-					try {
-						
-						// operation response type
-						if (!SwaggerHelper.basicTypes.contains(operation.getResponseClass())) {
-							String operationResponseClassName = operation.getResponseTypeInternal();
-								modelClassesSet.add(Class.forName(operationResponseClassName));
+					// operation response type
+					String responseModel = SwaggerSpecs11.getModelFromValueType(operation.getResponseClass());
+					if (responseModel!=null) {
+						String operationResponseClassName = operation.getResponseTypeInternal();
+						try {									
+							modelClassesSet.add(Play.classloader.loadClass(operationResponseClassName));
+						} catch (ClassNotFoundException e) {
+							Logger.error("model class not found: " + e.getMessage() + " it won't be part of the models XSD");
 						}
-						
-						// operation non primitive parameters
-						if (operation.getParameters() != null) {
-							for (DocumentationParameter param : operation.getParameters()) {
-								if (StringUtils.isNotBlank(param.getValueTypeInternal()))
-									if (!SwaggerHelper.basicTypes.contains(operation.getResponseClass())) {
-										String paramInternalType = param.getParamType();
-										modelClassesSet.add(Class.forName(paramInternalType));
-									}
+					}
+					
+					// operation non primitive parameters
+					if (operation.getParameters() != null) {
+					for (DocumentationParameter param : operation.getParameters()) {
+						String paramModel = SwaggerSpecs11.getModelFromValueType(param.getValueTypeInternal());
+						if (paramModel!=null) {
+							try {
+								modelClassesSet.add(Play.classloader.loadClass(paramModel));
+							} catch (ClassNotFoundException e) {
+								Logger.error("model class not found: " + e.getMessage() + " it won't be part of the models XSD");
 							}
 						}
-						
-					} catch (ClassNotFoundException e) {
-						logger.error("model class not found: " + e.getMessage());
-					}
-				}
-			}
-		}
+					}}
+				}}
+			}}
+		}}
 		
 		// convert set modelClasses to an array of Class
 		return modelClassesSet.toArray(new Class[modelClassesSet.size()]);

@@ -127,21 +127,22 @@ public class PetStoreClientController extends Controller {
 		}
 	}
 	
-	public static Result findPetsByStatus() throws Exception {
+	public static Result findPetsByStatus(String status) throws Exception {
 		
-		String statusParam = "available";
+		if (status==null) 
+			status = "available";
 		
 		// instantiate the stub
 		Petservice petservice = new AxisClientFactory().getClient(Petservice.class, PetserviceStub.class, Pet.class, "petstore");
 		
 		// prepare request
 		FindPetsByStatusRequestType request = new FindPetsByStatusRequestType();
-		request.setStatus(statusParam);
+		request.setStatus(status);
 		
 		// execute call and get response
 		PetList response = petservice.findPetsByStatus(request);
 		
-		return ok("found " + response.getPet().size() + " pets by status = [" + statusParam + "]");
+		return ok("found " + response.getPet().size() + " pets by status = [" + status + "]");
 	}
 	
 	// ========================================================================

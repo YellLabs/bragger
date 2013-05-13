@@ -147,7 +147,7 @@ public class SwaggerSpecs11 {
 		
 		valueType = valueType.replaceAll(" ", "");
 		
-		//TODO once a swagger annotations validator is implemeted 
+		//TODO once a swagger annotations validator is implemented 
 		//     the lowerCase is not necessary anymore
 		return primitiveTypes.contains(valueType.toLowerCase()); 
 	}

@@ -9,10 +9,15 @@ import javax.xml.bind.JAXBException;
 import org.ow2.easywsdl.schema.api.SchemaException;
 import org.ow2.easywsdl.wsdl.api.WSDLException;
 import com.wordnik.swagger.core.Documentation;
+
+import play.Logger;
+import play.Play;
 import play.mvc.Controller;
+import play.mvc.Router;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+
 import com.hibu.bragger.wsdl.WSDL20gen;
 import com.hibu.bragger.xsd.ModelsXSDGenerator;
 
@@ -34,7 +39,13 @@ public class BraggerController extends Controller {
 			// getting the models used in the operation of the passed controllers
 			@SuppressWarnings("rawtypes")
 			Class[] modelClasses = SwaggerHelper.getApiModelClasses();
+			
+			Logger.info(me() + "generating xsd for models: " + models(modelClasses));
+			
 			String schemaAsString = ModelsXSDGenerator.getModelsXSD(modelClasses);
+			
+			Logger.info(me() + "xsd generated, returning...");
+			
 			renderXml(schemaAsString);
 			
 		} catch (IllegalArgumentException e) {
@@ -57,7 +68,13 @@ public class BraggerController extends Controller {
 		try {
 			
 			Documentation resourceDoc = SwaggerHelper.readApiDocs().get(resourceName);
-			String wsdlAsString = WSDL20gen.generateWSDL20(resourceName, resourceDoc, SwaggerHelper.basicTypes);
+			
+			String xsdUrl = Router.reverse("controllers.controllers.bragger.BraggerController.getXSD").url;
+					
+			String appName = Play.configuration.getProperty("application.name");
+			
+			String wsdlAsString = WSDL20gen.generateWSDL20(appName, resourceName, resourceDoc, xsdUrl);
+			
 			renderXml(wsdlAsString);
 		
 		} catch (IllegalArgumentException e) {
@@ -69,5 +86,20 @@ public class BraggerController extends Controller {
 			error(500, e.getMessage());
 		}
 	}
+	
+	private static String models(Class[] modelClasses) {
+		String models = "";
 		
+		if (modelClasses!=null) {				
+			for (Class c: modelClasses)
+				models = c.getName() + ", " + models;
+		}
+		if (models.endsWith(", ")) 
+			models = models.substring(0, models.length()-2);
+		
+		return models;
+	}
+	
+	private static String me() { return "[" + BraggerController.class.getSimpleName() + "] "; }
+
 }

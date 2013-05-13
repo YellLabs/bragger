@@ -1,41 +1,37 @@
-self: com.hibu -> petstore-java-play1 1.1.0
+self: com.hibu -> petstore-java-play1 1.3.1-SNAPSHOT
 
 require:
     - play 1.2.5
-    - com/hibu -> play-bragger 1.1.0
-    - com/wordnik -> swagger-play_2.9.1 0.1.hibu
+    - com/hibu -> bragger-play 1.3.1-SNAPSHOT
+    - com/wordnik -> swagger-play_2.9.1 0.1.hibu2
 
 repositories:
             
-    - braggerGithubRepoZIP:
+    - playModsFromGithubRepo:
         type: http
         artifact:   http://yelllabs.github.com/bragger/[organization]/[module]/[revision]/[module]-[revision].zip
         contains:
-            - com/hibu -> play-bragger 1.1.0
-            - com/wordnik -> swagger-play_2.9.1 0.1.hibu
+            #- com/wordnik -> swagger-play_2.9.1 0.1.hibu2
 
-    #- localSwagger:
-    #    type:       local
-    #    artifact:   ${application.path}/../../../swagger-core/modules/swagger-play
-    #    contains:
-    #        - com/wordnik -> swagger-play_2.9.1 0.1.hibu
-    #- localBragger:
-    #    type:       local
-    #    artifact:   ${application.path}/../../modules/play-bragger
-    #    contains:
-    #        - com/hibu -> play-bragger 1.1.0
-    
-    - braggerGithubRepoJAR:
-        type: chain
-        using:
-            - hibuArtifactoryPlayModules:
-                type: http
-                artifact:   http://yelllabs.github.com/bragger/[organization]/[module]/[revision]/[module]-[revision].jar
+    - localSwagger:
+        type:       local
+        artifact:   ${application.path}/../../../swagger-core/modules/swagger-play
         contains:
-            - com/wordnik -> swagger-core_2.9.1 1.2.2-SNAPSHOT
-            - com/wordnik -> swagger-annotations_2.9.1 1.2.2-SNAPSHOT
-            - com/hibu -> bragger-core 1.1.0
+            - com/wordnik -> swagger-play_2.9.1 0.1.hibu2
+    
+    - localBragger:
+        type:       local
+        artifact:   ${application.path}/../../modules/play-bragger
+        contains:
+            - com/hibu -> bragger-play 1.3.1-SNAPSHOT
 
+    - comWordnikJarsGithubRepo:
+        type:       http
+        artifact:   http://yelllabs.github.com/bragger/com/wordnik/[module]/[revision]/[module]-[revision].jar
+        contains:
+            - com/wordnik->swagger-core_2.9.1 1.2.2.hibu-SNAPSHOT
+            - com/wordnik->swagger-annotations_2.9.1 1.2.2-SNAPSHOT
+               
     - petalsLinkMaven:
         type: http
         artifact: http://maven.petalslink.com/public/com/ebmwebsourcing/easycommons/[module]/[revision]/[module]-[revision].jar

@@ -3,4 +3,6 @@ modules/play-bragger/conf/private/
 publish_credentials
 fabfile.pyc
 bin/
+logs/
+test-result/
 

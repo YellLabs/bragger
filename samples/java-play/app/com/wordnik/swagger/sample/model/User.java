@@ -20,7 +20,8 @@ import com.wordnik.swagger.annotations.ApiProperty;
 
 import javax.xml.bind.annotation.*;
 
-@XmlRootElement(name = "user")
+@XmlRootElement(name = "User")
+@XmlType(name = "User")
 public class User {
 	private long id;
 	private String username;

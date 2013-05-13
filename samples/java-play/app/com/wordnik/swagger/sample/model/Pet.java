@@ -24,7 +24,8 @@ import java.util.ArrayList;
 import javax.xml.bind.annotation.XmlRootElement.*;
 import javax.xml.bind.annotation.*;
 
-@XmlRootElement(name = "pet")
+@XmlRootElement(name = "Pet")
+@XmlType(name = "Pet")
 public class Pet {
 	private long id;
 	private Category category;

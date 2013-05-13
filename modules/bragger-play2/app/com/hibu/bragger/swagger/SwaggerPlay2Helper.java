@@ -30,7 +30,8 @@ public class SwaggerPlay2Helper {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	public static Map<String, Documentation> readApiDocs() throws JsonParseException, JsonMappingException, IOException {
+	public static Map<String, Documentation> readApiDocs() 
+			throws JsonParseException, JsonMappingException, IOException {
 		
 		// result
 		Map<String, Documentation> docsMap = new HashMap<String, Documentation>();
@@ -73,6 +74,8 @@ public class SwaggerPlay2Helper {
 		Set<Class> modelClassesSet = new HashSet<Class>();
 		
 		Collection<Class> controllersClasses = getApiControllers().values();
+		
+		if (controllersClasses!=null) {
 		for (Class controllerClass : controllersClasses) {
 			
 			// this is used to get the internalType of the responseClasses
@@ -81,36 +84,35 @@ public class SwaggerPlay2Helper {
 			if (typedResourceDoc.getApis()!=null) {
 			for (DocumentationEndPoint api : typedResourceDoc.getApis()) {
 					
-					if (api.getOperations()!=null) {
-					for (DocumentationOperation operation : api.getOperations()) {
-							
-							// operation response type
-							String responseModel = SwaggerSpecs11.getModelFromValueType(operation.getResponseClass());
-							if (responseModel!=null) {
-								String operationResponseClassName = operation.getResponseTypeInternal();
-								try {									
-									modelClassesSet.add(Play.application().classloader().loadClass(operationResponseClassName));
-								} catch (ClassNotFoundException e) {
-									Logger.error("model class not found: " + e.getMessage() + " it won't be part of the models XSD");
-								}
+				if (api.getOperations()!=null) {
+				for (DocumentationOperation operation : api.getOperations()) {
+						
+					// operation response type
+					String responseModel = SwaggerSpecs11.getModelFromValueType(operation.getResponseClass());
+					if (responseModel!=null) {
+						String operationResponseClassName = operation.getResponseTypeInternal();
+						try {									
+							modelClassesSet.add(Play.application().classloader().loadClass(operationResponseClassName));
+						} catch (ClassNotFoundException e) {
+							Logger.error("model class not found: " + e.getMessage() + " it won't be part of the models XSD");
+						}
+					}
+					
+					// operation non primitive parameters
+					if (operation.getParameters() != null) {
+					for (DocumentationParameter param : operation.getParameters()) {
+						String paramModel = SwaggerSpecs11.getModelFromValueType(param.getValueTypeInternal());
+						if (paramModel!=null) {
+							try {
+								modelClassesSet.add(Play.application().classloader().loadClass(paramModel));
+							} catch (ClassNotFoundException e) {
+								Logger.error("model class not found: " + e.getMessage() + " it won't be part of the models XSD");
 							}
-							
-							// operation non primitive parameters
-							if (operation.getParameters() != null) {
-								for (DocumentationParameter param : operation.getParameters()) {
-									String paramModel = SwaggerSpecs11.getModelFromValueType(param.getValueTypeInternal());
-									if (paramModel!=null) {
-										try {
-											modelClassesSet.add(Play.application().classloader().loadClass(paramModel));
-										} catch (ClassNotFoundException e) {
-											Logger.error("model class not found: " + e.getMessage() + " it won't be part of the models XSD");
-										}
-									}
-								}
-							}
+						}
 					}}
+				}}
 			}}
-		}
+		}}
 		
 		// convert set modelClasses to an array of Class
 		return modelClassesSet.toArray(new Class[modelClassesSet.size()]);

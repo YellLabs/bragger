@@ -24,7 +24,8 @@ import javax.xml.bind.annotation.XmlRootElement.*;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.XmlElement.*;
 
-@XmlRootElement(name = "order")
+@XmlRootElement(name = "Order")
+@XmlType(name = "Order")
 public class Order {
 	private long id;
 	private long petId;

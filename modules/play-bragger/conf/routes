@@ -2,6 +2,5 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-#GET     /api-docs.wsdl/{resource}    controllers.bragger.BraggerController.getWSDL
-#GET     /api-docs.xsd                controllers.bragger.BraggerController.getXSD
-#GET     /prepare                     controllers.Base.prepare
+# added only to run tests
+GET     /public/                         staticDir:public

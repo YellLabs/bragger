@@ -18,7 +18,8 @@ package com.wordnik.swagger.sample.model;
 
 import javax.xml.bind.annotation.*;
 
-@XmlRootElement(name = "tag")
+@XmlRootElement(name = "Tag")
+@XmlType(name = "Tag")
 public class Tag {
 	private long id;
 	private String name;
