@@ -1,8 +1,9 @@
-self: com/hibu -> bragger-play 1.3.1-SNAPSHOT
+self: com/hibu -> bragger-play 1.3.1
 
 require:
     - play 1.2.5
-    - com.hibu -> bragger-core 1.3.1-SNAPSHOT
+    - com.hibu -> bragger-commons 1.3.1
+    - com.hibu -> bragger-core 1.3.1
     - com.wordnik -> swagger-core_2.9.1 1.2.2-SNAPSHOT
     - com.wordnik -> swagger-annotations_2.9.1 1.2.2-SNAPSHOT
     - com/wordnik -> swagger-play_2.9.1 0.1.hibu3:
@@ -23,13 +24,6 @@ require:
     - org.joda -> joda-convert 1.2
 
 repositories:
-
-    - hibuMavenSnapshots:
-         type: iBiblio
-         root: http://uskopciaft01.yellglobal.net:8080/artifactory/s1-libs-snapshot-local
-         contains:
-            - com.hibu -> bragger-core 1.3.1-SNAPSHOT
-            - com.hibu -> bragger-commons 1.3.1-SNAPSHOT
 
     - modules:
         type: chain
@@ -60,4 +54,4 @@ repositories:
         contains:
             - com.ebmwebsourcing.easycommons -> *
 
-            
+
