@@ -9,11 +9,10 @@ addSbtPlugin("play" % "sbt-plugin" % "2.1.0")
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 resolvers ++= Seq(
-	Resolver.url("HIBU SNAPSHOTS IVY2", new URL("http://uskopciaft01.yellglobal.net:8080/artifactory/s1-libs-snapshot-local"))(Resolver.ivyStylePatterns),
-	"HIBU SNAPSHOTS MAVEN" at "http://uskopciaft01.yellglobal.net:8080/artifactory/s1-libs-snapshot-local",
+	Resolver.url("HIBU SNAPSHOTS IVY2", new URL("http://yelllabs.github.com/bragger"))(Resolver.ivyStylePatterns),
 	"github pages repo" at "http://yelllabs.github.com/bragger",
 	"petalslink" at "http://maven.petalslink.com/public"
 )
 
-addSbtPlugin("com.hibu" % "bragger-sbt" % "1.3.1-SNAPSHOT")
+addSbtPlugin("com.hibu" % "bragger-sbt" % "1.3.1")
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

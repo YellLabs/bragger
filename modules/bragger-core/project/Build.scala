@@ -5,7 +5,7 @@ import com.typesafe.sbteclipse.core.EclipsePlugin._
 object ApplicationBuild extends Build {
 
 	val appName    = "bragger-core"
-	val appVersion = "1.3.1-SNAPSHOT"
+	val appVersion = "1.3.1"
 
 	val appDependencies = Seq()
 	
@@ -46,7 +46,7 @@ object ApplicationBuild extends Build {
 			EclipseKeys.executionEnvironment in ThisBuild := Some(EclipseExecutionEnvironment.JavaSE16),
 			EclipseKeys.projectFlavor in ThisBuild := EclipseProjectFlavor.Java,
 			EclipseKeys.skipParents in ThisBuild := false,
-			EclipseKeys.withSource in ThisBuild := true
+			EclipseKeys.withSource in ThisBuild := false
 			
 		)
 	).dependsOn(

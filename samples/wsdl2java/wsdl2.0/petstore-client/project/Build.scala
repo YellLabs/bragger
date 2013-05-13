@@ -7,7 +7,7 @@ import com.hibu.bragger.sbt.BraggerSbtPlugin.BraggerKeys._
 object ApplicationBuild extends Build {
 
 	val appName    = "petstore-client"
-	val appVersion = "1.3.1-SNAPSHOT"
+	val appVersion = "1.3.1"
 	
 	val appDependencies = Seq(
 		"com.hibu" % "bragger-client" % appVersion, 
@@ -34,7 +34,7 @@ object ApplicationBuild extends Build {
 		// sbt eclipse
 		//EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Managed,
 		EclipseKeys.skipParents in ThisBuild := false,
-		EclipseKeys.withSource in ThisBuild := true
+		EclipseKeys.withSource in ThisBuild := false
 		
 	).dependsOn(
 		//braggerClient
