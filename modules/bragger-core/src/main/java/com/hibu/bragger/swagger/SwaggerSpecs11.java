@@ -26,6 +26,7 @@ public class SwaggerSpecs11 {
 	private static final String DATATYPE_VOID = "void";
 	
 	// swagger primitives: lowercased until a swagger annotations validator is implemented
+	public static final String DATATYPE_STRING = "string";
 	public static final String DATATYPE_BYTE = "byte";
 	public static final String DATATYPE_BOOLEAN = "boolean";
 	public static final String DATATYPE_INT = "int";
@@ -33,7 +34,6 @@ public class SwaggerSpecs11 {
 	public static final String DATATYPE_FLOAT = "float";
 	public static final String DATATYPE_DOUBLE = "double";
 	public static final String DATATYPE_NUMBER = "number";
-	public static final String DATATYPE_STRING = "string";
 	public static final String DATATYPE_DATE = "date";	
 	
 	// containers
@@ -172,6 +172,8 @@ public class SwaggerSpecs11 {
 	}
 
 	/**
+	 * see http://www.w3.org/TR/xmlschema-2/#built-in-datatypes
+	 * 
 	 * @param dataType
 	 * @param modelsNamespace
 	 * @return
@@ -180,8 +182,33 @@ public class SwaggerSpecs11 {
 		
 		Type type = null;
 		
-		if (dataType.equals("string")) {
+		if (dataType.equals(DATATYPE_STRING)) {
 			type = EasyWsdlHelper.getSimpleType(null, "xs:string");
+
+		} else if (dataType.equals(DATATYPE_BYTE)) {
+			type = EasyWsdlHelper.getSimpleType(null, "xs:byte");
+			
+		} else if (dataType.equals(DATATYPE_BOOLEAN)) {
+			type = EasyWsdlHelper.getSimpleType(null, "xs:boolean");
+			
+		} else if (dataType.equals(DATATYPE_INT)) {
+			type = EasyWsdlHelper.getSimpleType(null, "xs:integer");
+			
+		} else if (dataType.equals(DATATYPE_LONG)) {
+			type = EasyWsdlHelper.getSimpleType(null, "xs:long");
+	
+		} else if (dataType.equals(DATATYPE_FLOAT)) {
+			type = EasyWsdlHelper.getSimpleType(null, "xs:float");
+			
+		} else if (dataType.equals(DATATYPE_DOUBLE)) {
+			type = EasyWsdlHelper.getSimpleType(null, "xs:double");
+
+		} else if (dataType.equals(DATATYPE_NUMBER)) {
+			type = EasyWsdlHelper.getSimpleType(null, "xs:double");
+			
+		} else if (dataType.equals(DATATYPE_DATE)) {
+			type = EasyWsdlHelper.getSimpleType(null, "xs:date");
+			
 		} else {
 			throw new UnsupportedOperationException("the mapping from swagger primitive type " + dataType + " to an xsd one has not been implemented yet");
 		}

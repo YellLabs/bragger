@@ -45,16 +45,13 @@ GET     /user.xml/{username}                    UserController.getUserByName
 GET     /user.xml/login                         UserController.loginUser
 GET     /user.xml/logout                        UserController.logoutUser
 
+# Ignore favicon requests
+GET     /favicon.ico                            404
+
 # bragger-play module routes
 GET     /api-docs.wsdl/{resourceName}           controllers.bragger.BraggerController.getWSDL
 GET     /api-docs.xsd                           controllers.bragger.BraggerController.getXSD
-
-# Map static resources from the /app/public folder to the /public path
-GET     /public/                                staticDir:public
 GET     /swagger-ui/                            staticDir:public/swagger-ui-1.1.7
-
-# Ignore favicon requests
-GET     /favicon.ico                            404
 
 
 

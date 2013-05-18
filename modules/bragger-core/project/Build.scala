@@ -5,7 +5,7 @@ import com.typesafe.sbteclipse.core.EclipsePlugin._
 object ApplicationBuild extends Build {
 
 	val appName    = "bragger-core"
-	val appVersion = "1.3.1"
+	val appVersion = "1.3.2"
 
 	val appDependencies = Seq()
 	
@@ -14,7 +14,7 @@ object ApplicationBuild extends Build {
 		settings = Project.defaultSettings ++ Seq(
 		    
 			libraryDependencies ++= Seq(
-				"com.hibu" % "bragger-commons" % appVersion,
+				"com.hibu" % "bragger-commons" % appVersion ,
 				"com.wordnik" % "swagger-core_2.9.1" % "1.2.2-SNAPSHOT" excludeAll(
 				    ExclusionRule(organization = "javax.servlet", name = "servlet-api")
 				),
@@ -47,7 +47,6 @@ object ApplicationBuild extends Build {
 			EclipseKeys.projectFlavor in ThisBuild := EclipseProjectFlavor.Java,
 			EclipseKeys.skipParents in ThisBuild := false,
 			EclipseKeys.withSource in ThisBuild := false
-			
 		)
 	).dependsOn(
 	    //braggerCommons

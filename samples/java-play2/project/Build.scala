@@ -6,7 +6,7 @@ import com.typesafe.sbteclipse.core.EclipsePlugin.EclipseKeys
 object ApplicationBuild extends Build {
 
 	val appName    = "petstore-java-play2"
-	val appVersion = "1.3.1"
+	val appVersion = "1.3.2"
 
 	val appDependencies = Seq(
 		"com.hibu" %% "bragger-play2" % appVersion,

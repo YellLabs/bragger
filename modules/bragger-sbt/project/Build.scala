@@ -5,10 +5,10 @@ import com.typesafe.sbteclipse.core.EclipsePlugin._
 object ApplicationBuild extends Build {
 
 	val appName    = "bragger-sbt"
-	val appVersion = "1.3.1"
+	val appVersion = "1.3.2"
 
 	val appDependencies = Seq(
-		"com.hibu" % "bragger-client" % appVersion//, //excludeAll(ExclusionRule(organization = "javax.servlet", name = "servlet-api")),
+		"com.hibu" % "bragger-client" % appVersion //excludeAll(ExclusionRule(organization = "javax.servlet", name = "servlet-api")),
 	)
 	
 	lazy val root = Project(

@@ -21,10 +21,7 @@ PUT     /user.json/:username         controllers.UserApiController.updateUser(us
 DELETE  /user.json/:username         controllers.UserApiController.deleteUser(username)
 GET     /user.json/:username         controllers.UserApiController.getUserByName(username)
 
-# Map static resources from the /public folder to the /assets URL path
-GET     /swagger-ui/*file            controllers.Assets.at(path="/public/swagger-ui-1.1.7", file)
-
-
 # bragger urls from the bragger-play2 module routes file
+GET     /docs/swagger-ui/*file        controllers.Assets.at(path="/public/swagger-ui-1.1.7", file)
 ->      /docs                         com.hibu.bragger.Routes
 

@@ -73,6 +73,9 @@ public class BraggerController extends Controller {
 					
 			String appName = Play.configuration.getProperty("application.name");
 			
+			if (appName==null || appName.isEmpty())
+				throw new Exception("wsdl cannot be generated when no application.name is configured in the config file");
+			
 			String wsdlAsString = WSDL20gen.generateWSDL20(appName, resourceName, resourceDoc, xsdUrl);
 			
 			renderXml(wsdlAsString);
